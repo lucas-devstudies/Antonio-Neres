@@ -11,7 +11,7 @@ const inputVariants = cva(
           filled: "border border-transparent bg-muted focus-visible:bg-background focus-visible:ring-ring",
           error: "border border-red-500 bg-red-50/20 text-red-900 placeholder:text-red-300 focus-visible:ring-red-500",
           ghost: "border-b border-input rounded-none bg-transparent px-0 focus-visible:border-primary focus-visible:ring-0",
-      },
+        },
       size:{
         default: "h-10 px-3 py-2",
           sm: "h-8 px-2 text-xs",

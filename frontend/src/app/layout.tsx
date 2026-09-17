@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="pt-br"
       suppressHydrationWarning
       className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable)}>
-      <body className="flex-1 flex-col">
+      <body className="flex-1 flex-col flex w-full justify-center items-center bg-white dark:bg-black">
         <ThemeProvider attribute={'class'} defaultTheme="system" enableSystem>
         {children}
         </ThemeProvider>
