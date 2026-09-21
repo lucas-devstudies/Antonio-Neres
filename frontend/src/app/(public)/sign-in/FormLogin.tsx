@@ -18,7 +18,8 @@ export default function FormLogin(){
         resolver: zodResolver(loginSchema), 
         defaultValues: {
             email: "", 
-            password: ""
+            password: "",
+            honeypot: ""
         }}
     );
 
@@ -80,6 +81,22 @@ export default function FormLogin(){
                                 {fieldState.error?.message}
                             </span>
                             )}
+                        </div> 
+                    )}
+                />
+                <Controller
+                    control={form.control}
+                    name="honeypot"
+                    render={({field})=>(
+                        <div className="flex flex-col gap-2 w-full absolute top-[-100] left-[-100] ">
+                            <label htmlFor="honeypot" className="text-sm font-medium">
+                            Name
+                            </label>
+                            <Input
+                                {...field}
+                                id="honeypot"
+                                className="w-2 pr-10"
+                            />
                         </div> 
                     )}
                 />
