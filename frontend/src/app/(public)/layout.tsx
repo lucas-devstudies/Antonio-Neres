@@ -3,7 +3,7 @@ export default function PublicLayout({
 }: Readonly<{
     children: React.ReactNode;}>
 ){
-    return <div className="max-w-[1920px]">
+    return <div className="max-w-full">
         {children}
     </div>
 }
