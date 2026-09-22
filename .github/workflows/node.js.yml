@@ -26,7 +26,7 @@ jobs:
         run: npm ci
 
       - name: Gerar Prisma Client
-        working-directory: frontend
+        working-directory: npx prisma generate --schema=prisma/schema.prisma
         run: npx prisma generate
 
       - name: Executar build
