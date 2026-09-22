@@ -6,7 +6,7 @@ import ThemeSwitcher from "./theme-switcher";
 
 export default function Navbar() {
     return (
-        <nav className="flex flex-row w-full justify-between fixed top-0 left-0 p-4 items-center bg-white dark:bg-black border-b border-b-black/20 dark:border-b-white/20 border-b-2">
+        <nav className="flex flex-row w-full justify-between fixed top-0 left-0 p-4 items-center bg-white dark:bg-black border-b-black/20 dark:border-b-white/20 border-b-2">
             <div className="flex gap-2">
                 <Logo/>
                 <h2 className="text-secondary font-bold sm:flex hidden">Prev Antonio Neres</h2>

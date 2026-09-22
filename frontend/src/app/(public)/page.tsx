@@ -1,6 +1,5 @@
 import InfiniteSlider from "@/components/infiniteSlider";
 import Navbar from "@/components/Navbar";
-import ThemeSwitcher from "@/components/theme-switcher";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardAction, CardDescription, CardTitle } from "@/components/ui/card";
 import { cn } from "cn";
@@ -26,7 +25,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen w-full bg-white dark:bg-black">
       <Navbar />
-      <main className="flex-1 w-full h-auto overflow-y-scroll max-w-screen pt-28 pb-12 flex flex-col gap-12 items-center sm:items-start">
+      <main className="flex-1 w-full h-auto max-w-screen pt-28 pb-12 flex flex-col gap-12 items-center sm:items-start">
         <div className="w-full px-4  flex md:flex-row flex-col-reverse gap-6 items-center">
           <div className="w-full flex flex-col justify-between gap-6">
             <div>
@@ -58,7 +57,7 @@ export default function Home() {
         </div>
         <div className="w-full px-4  grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
           {listCards.map((item) => (
-            <Card key={item.title} className="p-4 flex flex-col items-center justify-center rounded-md border-input">
+            <Card key={item.title} className="p-4 flex flex-col items-center justify-center rounded-md border-input drop-shadow-sm drop-shadow-green-500">
               <CardAction className="flex w-full items-center justify-center">
                 <Image className="flex" width={48} height={48} alt={item.alt} src={item.img} />
               </CardAction>
@@ -67,7 +66,7 @@ export default function Home() {
             </Card>
           ))}
         </div>
-        <div className="max-h-fit w-full p-0 m-0 bg-white border-y-4 border-primary">
+        <div className="max-h-fit w-full py-2 m-0 bg-white border-y-4 border-primary">
           <InfiniteSlider />
         </div>
       </main>

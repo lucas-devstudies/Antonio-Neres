@@ -15,7 +15,7 @@ const listUniversities = files
 
 export default function InfiniteSlider(){
   return (
-    <Marquee className="w-full [--duration:20s] flex">
+    <Marquee className="w-full [--duration:20s]">
       {listUniversities.map((item, index) => (
         <Image 
           key={index} 

@@ -6,24 +6,45 @@ import z from "zod";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import {  CheckCircle2Icon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { auth } from "@/lib/auth/auth";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { toast } from "sonner" 
 
 export default function FormLogin(){
     
     const [showPassword,setShowPassword] = useState(false);
-    
+    const local = 'http://localhost:3000/';
+
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema), 
         defaultValues: {
             email: "", 
-            password: ""
+            password: "",
+            honeypot: ""
         }}
     );
 
-    function onSubmit(values: z.infer<typeof loginSchema>){
-        console.log(values)
+    function onSubmit({email,password}: z.infer<typeof loginSchema>){
+        auth.signIn.email({
+            email,
+            password,
+            callbackURL: local
+        },{
+            onError(context){
+                if(context.error.message){
+                    <Alert>
+                        <CheckCircle2Icon/>
+                        <AlertTitle>Sucesso</AlertTitle>
+                        <AlertDescription>Usuário logado</AlertDescription>
+                    </Alert>
+                }else{
+                    toast.error("Login ou senha inválidos")
+                }
+            }
+        })
     }
     
     return (
@@ -80,6 +101,22 @@ export default function FormLogin(){
                                 {fieldState.error?.message}
                             </span>
                             )}
+                        </div> 
+                    )}
+                />
+                <Controller
+                    control={form.control}
+                    name="honeypot"
+                    render={({field})=>(
+                        <div className="flex flex-col gap-2 w-full absolute top-[-100] left-[-100] ">
+                            <label htmlFor="honeypot" className="text-sm font-medium">
+                            Name
+                            </label>
+                            <Input
+                                {...field}
+                                id="honeypot"
+                                className="w-2 pr-10"
+                            />
                         </div> 
                     )}
                 />
