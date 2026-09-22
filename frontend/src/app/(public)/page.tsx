@@ -71,7 +71,7 @@ export default function Home() {
         </section>
         <section className="w-full px-4 flex md:flex-row flex-col gap-6 items-center">
           <div className="w-full aspect-video rounded-xl overflow-hidden">
-            <Image width={200} height={200} className="w-full h-full" alt="Foto de turma completa" src='/assets/bg-2.png'/>
+            <Image width={200} height={200} className="w-full h-full" alt="Foto de turma completa" src='/assets/bg.png'/>
           </div>
            <div className="w-full flex flex-col justify-between gap-6">
             <div>
@@ -79,11 +79,10 @@ export default function Home() {
                 Método AN
               </h2>
               <p className="mt-2 text-lg text-foreground/80 text-justify">
-                Estamos preparados para lhe ajudar a aprender Língua Portuguesa & Matemática, sendo você o principal agente desse processo, somos o Método AN.  Temos uma plataforma que contém toda teoria do que o estudante precisa para realizar as questões, sendo que temos uma interação diretamente por nossa plataforma. Plataforma estuda.com com questões e aulas, para acesso a tudo o que estamos passando pela plataforma.               
+                Estamos preparados para lhe ajudar a aprender Língua Portuguesa &amp; Matemática, sendo você o principal agente desse processo, somos o Método AN.  Temos uma plataforma que contém toda teoria do que o estudante precisa para realizar as questões, sendo que temos uma interação diretamente por nossa plataforma.               
               </p>
             </div>
           </div>
-          
         </section>
       </main>
     </div>
