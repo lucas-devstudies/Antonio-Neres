@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [ "main" ]
+
   pull_request:
     branches: [ "main" ]
 
@@ -26,8 +27,8 @@ jobs:
         run: npm ci
 
       - name: Gerar Prisma Client
-        working-directory: npx prisma generate --schema=prisma/schema.prisma
-        run: npx prisma generate
+        working-directory: frontend
+        run: npx prisma generate --schema=prisma/schema.prisma
 
       - name: Executar build
         working-directory: frontend
