@@ -26,7 +26,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen w-full bg-white dark:bg-black">
       <Navbar />
       <main className="flex-1 w-full h-auto max-w-screen pt-28 pb-12 flex flex-col gap-12 items-center sm:items-start">
-        <div className="w-full px-4  flex md:flex-row flex-col-reverse gap-6 items-center">
+        <section className="w-full px-4  flex md:flex-row flex-col-reverse gap-6 items-center">
           <div className="w-full flex flex-col justify-between gap-6">
             <div>
               <h2 className="md:text-left text-center text-primary text-xl font-bold uppercase">
@@ -54,8 +54,8 @@ export default function Home() {
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             />
           </div>
-        </div>
-        <div className="w-full px-4  grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+        </section>
+        <section className="w-full px-4  grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
           {listCards.map((item) => (
             <Card key={item.title} className="p-4 flex flex-col items-center justify-center rounded-md border-input drop-shadow-sm drop-shadow-green-500">
               <CardAction className="flex w-full items-center justify-center">
@@ -65,10 +65,26 @@ export default function Home() {
               <CardDescription>{item.description}</CardDescription>
             </Card>
           ))}
-        </div>
-        <div className="max-h-fit w-full py-2 m-0 bg-white border-y-4 border-primary">
+        </section>
+        <section className="max-h-fit w-full py-2 m-0 bg-white border-y-4 border-primary">
           <InfiniteSlider />
-        </div>
+        </section>
+        <section className="w-full px-4 flex md:flex-row flex-col gap-6 items-center">
+          <div className="w-full aspect-video rounded-xl overflow-hidden">
+            <Image width={200} height={200} className="w-full h-full" alt="Foto de turma completa" src='/assets/bg-2.png'/>
+          </div>
+           <div className="w-full flex flex-col justify-between gap-6">
+            <div>
+              <h2 className="md:text-left text-center text-primary text-xl font-bold uppercase">
+                Método AN
+              </h2>
+              <p className="mt-2 text-lg text-foreground/80 text-justify">
+                Estamos preparados para lhe ajudar a aprender Língua Portuguesa & Matemática, sendo você o principal agente desse processo, somos o Método AN.  Temos uma plataforma que contém toda teoria do que o estudante precisa para realizar as questões, sendo que temos uma interação diretamente por nossa plataforma. Plataforma estuda.com com questões e aulas, para acesso a tudo o que estamos passando pela plataforma.               
+              </p>
+            </div>
+          </div>
+          
+        </section>
       </main>
     </div>
   );
