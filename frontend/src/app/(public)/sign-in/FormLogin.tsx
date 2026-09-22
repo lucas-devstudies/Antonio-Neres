@@ -6,11 +6,10 @@ import z from "zod";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import {  CheckCircle2Icon, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { auth } from "@/lib/auth/auth";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner" 
 
 export default function FormLogin(){
@@ -27,19 +26,15 @@ export default function FormLogin(){
         }}
     );
 
-    function onSubmit({email,password}: z.infer<typeof loginSchema>){
+    async function onSubmit({email,password}: z.infer<typeof loginSchema>){
         auth.signIn.email({
             email,
             password,
             callbackURL: local
         },{
             onError(context){
-                if(context.error.message){
-                    <Alert>
-                        <CheckCircle2Icon/>
-                        <AlertTitle>Sucesso</AlertTitle>
-                        <AlertDescription>Usuário logado</AlertDescription>
-                    </Alert>
+                if(!context.error.message){
+                    toast.success("usuário logado")
                 }else{
                     toast.error("Login ou senha inválidos")
                 }
