@@ -26,6 +26,15 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Verificar arquivos
+        working-directory: frontend
+        run: |
+          pwd
+          ls -la
+          ls -la prisma
+
+    
+
       - name: Gerar Prisma Client
         working-directory: frontend
         run: npx prisma generate --schema=prisma/schema.prisma
