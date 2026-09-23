@@ -34,8 +34,6 @@ export default function FormLogin(){
         },{
             onError(context){
                 if(!context.error.message){
-                    toast.success("usuário logado")
-                }else{
                     toast.error("Login ou senha inválidos")
                 }
             }
