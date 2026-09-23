@@ -1,3 +1,4 @@
+import { Footer } from "@/components/footer";
 import InfiniteSlider from "@/components/infiniteSlider";
 import Navbar from "@/components/Navbar";
 import { buttonVariants } from "@/components/ui/button";
@@ -85,6 +86,7 @@ export default function Home() {
           </div>
         </section>
       </main>
+      <Footer/>
     </div>
   );
 }
