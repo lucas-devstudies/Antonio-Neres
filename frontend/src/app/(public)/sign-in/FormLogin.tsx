@@ -33,7 +33,7 @@ export default function FormLogin(){
             callbackURL: local
         },{
             onError(context){
-                if(!context.error.message){
+                if(context.error.message){
                     toast.error("Login ou senha inválidos")
                 }
             }
