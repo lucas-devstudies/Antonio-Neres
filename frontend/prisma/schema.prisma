@@ -7,7 +7,7 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
+model Admin {
   id            String    @id
   name          String
   email         String
@@ -15,11 +15,12 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+
+  sessions Session[]
+  accounts Account[]
 
   @@unique([email])
-  @@map("user")
+  @@map("admin")
 }
 
 model Session {
@@ -30,31 +31,32 @@ model Session {
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  adminId String
+  admin   Admin   @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   @@unique([token])
-  @@index([userId])
+  @@index([adminId])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
+  id                   String   @id
+  accountId            String
+  providerId           String
+  adminId              String
+  admin                 Admin   @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  accessToken          String?
+  refreshToken         String?
+  idToken              String?
+  accessTokenExpiresAt DateTime?
   refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  scope                String?
+  password             String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
-  @@index([userId])
+  @@index([adminId])
   @@map("account")
 }
 

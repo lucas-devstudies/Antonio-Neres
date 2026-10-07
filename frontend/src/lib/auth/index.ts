@@ -7,6 +7,24 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
 
+  user: {
+    modelName: "admin",
+  },
+
+  session: {
+    modelName: "session",
+    fields: {
+      userId: "adminId",
+    },
+  },
+
+  account: {
+    modelName: "account",
+    fields: {
+      userId: "adminId",
+    },
+  },
+
   emailAndPassword: {
     enabled: true,
   },
