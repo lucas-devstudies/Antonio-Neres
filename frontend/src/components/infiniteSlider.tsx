@@ -1,4 +1,3 @@
-
 import fs from 'fs';
 import path from 'path';
 import Image from "next/image";
@@ -10,7 +9,7 @@ const listUniversities = files
     .filter((file) => /\.(png|jpe?g|svg|webp)$/i.test(file))
     .map((file) => ({
         img: `/assets/schools/${file}`,
-        name: file.replace(/\.[^/.]+$/, ""), // Remove a extensão para usar de nome/alt
+        name: file.replace(/\.[^/.]+$/, ""), 
     }));
 
 export default function InfiniteSlider(){
@@ -21,9 +20,9 @@ export default function InfiniteSlider(){
           key={index} 
           width={48} 
           height={48} 
-          src={item.img} // Usa o caminho '/assets/logo.png' sem a palavra 'public'
+          src={item.img}
           alt={item.name}
-          className="object-contain shrink-0"
+          className="object-contain shrink-0 w-auto h-12"
         />
       ))}
     </Marquee>

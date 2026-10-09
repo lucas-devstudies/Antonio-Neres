@@ -18,13 +18,13 @@ export default function ThemeSwitcher() {
 
   if (!mounted) {
     return (
-      <Button className="w-1/3 rounded-full border-input" variant="outline" disabled />
+      <Button className="w-[10] h-[10] rounded-full border-input" variant="outline" disabled />
     );
   }
     return (
-        <Button className="w-1/3 rounded-full border-input" variant={'outline'} onClick={()=> setTheme(theme === "dark" ? "light" : "dark")}>
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:-rotate-0 dark:scale-100"></Sun>
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:rotate-90 dark:scale-0"></Moon>
+        <Button className="h-10 w-10  rounded-full border-input p-0" variant={'outline'} onClick={()=> setTheme(theme === "dark" ? "light" : "dark")}>
+            <Sun className="h-10 w-10 rotate-90 scale-0 transition-all dark:-rotate-0 dark:scale-100"></Sun>
+            <Moon className="absolute h-10 w-10 rotate-0 scale-100 transition-all dark:rotate-90 dark:scale-0"></Moon>
         </Button>
     );
 }
