@@ -6,10 +6,22 @@ const publicRoutes = [
   { path: '/', whenAuthenticated: 'next' },
 ] as const
 
+const validRoutes = [
+  "/",
+  "/sign-in",
+  "/register",
+  "/admin",
+]
+
 const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = '/sign-in'
 
 export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
+  const isValidRoute = validRoutes.find((route) => route === path)
+
+  if (!isValidRoute) {
+    return NextResponse.redirect(new URL("/", request.url))
+  }
   const publicRoute = publicRoutes.find((route) => route.path === path)
 
   // Verifica o cookie de sessão do Better Auth (http e https/secure)
@@ -17,10 +29,7 @@ export function proxy(request: NextRequest) {
     request.cookies.get('better-auth.session_token') ||
     request.cookies.get('__Secure-better-auth.session_token')
   const authToken = sessionCookie?.value
-
-  // DEBUG: exibe no terminal
-  console.log(`[Proxy] Path: ${path} | Auth: ${!!authToken} | Public: ${!!publicRoute}`)
-
+  
   // 1. Usuário não autenticado tentando acessar rota privada
   if (!authToken && !publicRoute) {
     return NextResponse.redirect(new URL(REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE, request.url))
@@ -28,7 +37,7 @@ export function proxy(request: NextRequest) {
 
   // 2. Usuário autenticado acessando rota pública configurada para redirecionar
   if (authToken && publicRoute && publicRoute.whenAuthenticated === 'redirect') {
-    return NextResponse.redirect(new URL('/', request.url))
+    return NextResponse.redirect(new URL('/admin', request.url))
   }
 
   return NextResponse.next()
