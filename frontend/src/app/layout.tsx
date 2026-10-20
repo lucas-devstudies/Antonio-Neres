@@ -5,6 +5,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import ThemeProvider from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -30,8 +31,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable)}>
       <body className="flex-1 flex-col flex w-full justify-center items-center bg-white dark:bg-black">
           <ThemeProvider attribute={'class'} defaultTheme="system" enableSystem>
-            {children}
-            <Toaster position="bottom-right" richColors/>
+            <TooltipProvider>
+                {children}
+                <Toaster position="bottom-right" richColors/>
+            </TooltipProvider>
           </ThemeProvider>
       </body>    
     </html>

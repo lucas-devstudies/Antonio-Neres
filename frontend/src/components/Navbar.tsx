@@ -1,5 +1,4 @@
 //retirar depois de consertar
-'use client'
 import { Button} from "./ui/button";
 import Logo from "./logo";
 import ThemeSwitcher from "./theme-switcher";
@@ -11,7 +10,7 @@ export default function Navbar() {
                 <Logo/>
                 <h2 className="text-secondary font-bold sm:flex hidden">Prev Antonio Neres</h2>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-center items-center">
                 <ThemeSwitcher/>
                 <Button variant='outline_primary'>Método AN</Button>
             </div>
