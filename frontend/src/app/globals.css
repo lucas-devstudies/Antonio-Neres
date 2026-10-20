@@ -55,6 +55,7 @@
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.13);
   --tracking-normal: 0.025em;
   --spacing: 0.22rem;
+  --kanban: oklch(63.085% 0.20569 142.663 / 0.30);
 }
 
 .dark {
@@ -108,6 +109,7 @@
   --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.05), 0 4px 6px -1px hsl(0 0% 0% / 0.05);
   --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.05), 0 8px 10px -1px hsl(0 0% 0% / 0.05);
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.13);
+  --kanban: oklch(0.235 0 0);
 }
 
 @theme inline {
@@ -143,6 +145,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-kanban: var(--kanban);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);

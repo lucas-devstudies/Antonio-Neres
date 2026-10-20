@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { auth } from "@/lib/auth/auth";
+import { authClient } from "@/lib/auth/auth-client";
 import { toast } from "sonner" 
 
 export default function FormLogin(){
@@ -27,7 +27,7 @@ export default function FormLogin(){
     );
 
     async function onSubmit({email,password}: z.infer<typeof loginSchema>){
-        auth.signIn.email({
+        authClient.signIn.email({
             email,
             password,
             callbackURL: local

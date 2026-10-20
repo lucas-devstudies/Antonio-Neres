@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -13,7 +11,7 @@ import {
 } from "@/components/ui/sidebar"
 import { LayoutDashboardIcon } from "lucide-react"
 
-// This is sample data.
+//Puxar esse usuário do banco a partir do token do usuário logado
 const data = {
   user: {
     name:"aaa",
