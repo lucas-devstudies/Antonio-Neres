@@ -25,9 +25,8 @@ export function proxy(request: NextRequest) {
   const publicRoute = publicRoutes.find((route) => route.path === path)
 
   // Verifica o cookie de sessão do Better Auth (http e https/secure)
-  const sessionCookie =
-    request.cookies.get('better-auth.session_token') ||
-    request.cookies.get('__Secure-better-auth.session_token')
+  const sessionCookie = request.cookies.get('better-auth.session_token')
+  
   const authToken = sessionCookie?.value
   
   // 1. Usuário não autenticado tentando acessar rota privada

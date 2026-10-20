@@ -9,7 +9,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -18,6 +17,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useSignOut } from "@/lib/auth/sign-out"
 import { ChevronsUpDownIcon } from "lucide-react"
 
 export function NavUser({
@@ -30,6 +30,7 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const { signOut } = useSignOut()
 
   return (
     <SidebarMenu>
@@ -57,8 +58,8 @@ export function NavUser({
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuItem>
-              Log out
+            <DropdownMenuItem onClick={signOut}>
+              Sair da conta
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
