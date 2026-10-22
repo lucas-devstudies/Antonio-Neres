@@ -31,12 +31,16 @@ export default function FormLogin(){
             email,
             password,
             callbackURL: local
-        },{
+        },
+        {
             onError(context){
                 if(context.error.message){
                     toast.error("Login ou senha inválidos")
                 }
-            }
+            },
+            onSuccess(context) {
+                //ADICIONAR ENDPOINT DE BUSCA @EMAIL @NAME
+            },
         })
     }
     
