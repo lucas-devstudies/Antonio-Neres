@@ -36,7 +36,12 @@ var _s = __turbopack_context__.k.signature();
 function FormLogin() {
     _s();
     const [showPassword, setShowPassword] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const local = 'http://localhost:3000/';
+    //===============
+    //comentar esse para login offline
+    const local = 'https://carried-specked-navy.ngrok-free.dev/sign-in';
+    //comentar esse para login online (ativar tunnel mgrok)
+    //const local = 'http://localhost:3000/'; 
+    //===============
     const form = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$hook$2d$form$2f$dist$2f$index$2e$esm$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useForm"])({
         resolver: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$hookform$2f$resolvers$2f$zod$2f$dist$2f$zod$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["zodResolver"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$utils$2f$zodSchemas$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["loginSchema"]),
         defaultValues: {
@@ -77,7 +82,7 @@ function FormLogin() {
                                     children: "Email"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                    lineNumber: 55,
+                                    lineNumber: 62,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -88,7 +93,7 @@ function FormLogin() {
                                     placeholder: "Digite seu email"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                    lineNumber: 58,
+                                    lineNumber: 65,
                                     columnNumber: 25
                                 }, this),
                                 fieldState.invalid && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$field$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FieldError"], {
@@ -97,18 +102,18 @@ function FormLogin() {
                                     ]
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                    lineNumber: 66,
+                                    lineNumber: 73,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                            lineNumber: 54,
+                            lineNumber: 61,
                             columnNumber: 21
                         }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                    lineNumber: 50,
+                    lineNumber: 57,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$hook$2d$form$2f$dist$2f$index$2e$esm$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Controller"], {
@@ -123,7 +128,7 @@ function FormLogin() {
                                     children: "Senha"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                    lineNumber: 76,
+                                    lineNumber: 83,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -138,7 +143,7 @@ function FormLogin() {
                                             className: "w-full pr-10"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                            lineNumber: 80,
+                                            lineNumber: 87,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -149,24 +154,24 @@ function FormLogin() {
                                                 size: 18
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                                lineNumber: 93,
+                                                lineNumber: 100,
                                                 columnNumber: 49
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$eye$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Eye$3e$__["Eye"], {
                                                 size: 18
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                                lineNumber: 93,
+                                                lineNumber: 100,
                                                 columnNumber: 72
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                            lineNumber: 88,
+                                            lineNumber: 95,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                    lineNumber: 79,
+                                    lineNumber: 86,
                                     columnNumber: 29
                                 }, this),
                                 fieldState.invalid && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -174,18 +179,18 @@ function FormLogin() {
                                     children: fieldState.error?.message
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                    lineNumber: 97,
+                                    lineNumber: 104,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                            lineNumber: 75,
+                            lineNumber: 82,
                             columnNumber: 25
                         }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                    lineNumber: 71,
+                    lineNumber: 78,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$hook$2d$form$2f$dist$2f$index$2e$esm$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Controller"], {
@@ -200,7 +205,7 @@ function FormLogin() {
                                     children: "Name"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                    lineNumber: 109,
+                                    lineNumber: 116,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -209,18 +214,18 @@ function FormLogin() {
                                     className: "w-2 pr-10"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                                    lineNumber: 112,
+                                    lineNumber: 119,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                            lineNumber: 108,
+                            lineNumber: 115,
                             columnNumber: 25
                         }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                    lineNumber: 104,
+                    lineNumber: 111,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$field$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Field"], {
@@ -231,12 +236,12 @@ function FormLogin() {
                         children: "Entrar"
                     }, void 0, false, {
                         fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                        lineNumber: 121,
+                        lineNumber: 128,
                         columnNumber: 17
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                    lineNumber: 120,
+                    lineNumber: 127,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -247,7 +252,7 @@ function FormLogin() {
                             children: "esqueceu a senha?"
                         }, void 0, false, {
                             fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                            lineNumber: 126,
+                            lineNumber: 133,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -256,24 +261,24 @@ function FormLogin() {
                             children: "Recuperar a senha"
                         }, void 0, false, {
                             fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                            lineNumber: 127,
+                            lineNumber: 134,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-                    lineNumber: 125,
+                    lineNumber: 132,
                     columnNumber: 13
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-            lineNumber: 49,
+            lineNumber: 56,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/app/(public)/sign-in/FormLogin.tsx",
-        lineNumber: 48,
+        lineNumber: 55,
         columnNumber: 9
     }, this);
 }
@@ -774,7 +779,7 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$better$2d$auth$2f$dist$2f$client$2f$react$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/better-auth/dist/client/react/index.mjs [app-client] (ecmascript) <locals>");
 ;
 const authClient = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$better$2d$auth$2f$dist$2f$client$2f$react$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createAuthClient"])({
-    baseURL: "http://localhost:3000"
+    baseURL: ("TURBOPACK compile-time truthy", 1) ? window.location.origin : "TURBOPACK unreachable"
 });
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);

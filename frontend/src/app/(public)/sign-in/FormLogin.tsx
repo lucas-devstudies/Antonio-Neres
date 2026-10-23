@@ -15,8 +15,15 @@ import { toast } from "sonner"
 export default function FormLogin(){
     
     const [showPassword,setShowPassword] = useState(false);
-    const local = 'http://localhost:3000/';
-
+    //===============
+    //comentar esse para login offline
+    const local = 'https://carried-specked-navy.ngrok-free.dev/sign-in';
+    
+    //comentar esse para login online (ativar tunnel mgrok)
+    //const local = 'http://localhost:3000/'; 
+    
+    //===============
+    
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema), 
         defaultValues: {
