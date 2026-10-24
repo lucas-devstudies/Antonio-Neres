@@ -1,6 +1,10 @@
 
 import { NextResponse } from "next/server";
-import {  Payment,WebhookSignatureValidator, InvalidWebhookSignatureError} from "mercadopago";
+import {
+  Payment,
+  WebhookSignatureValidator,
+  InvalidWebhookSignatureError,
+} from "mercadopago";
 import { mercadoPago } from "@/lib/mercadopago";
 import { prisma } from "@/lib/prisma";
 import { courseBundles } from "@/lib/course-bundle";
@@ -42,7 +46,7 @@ export async function POST(request: Request) {
       );
     }
 
-    console.error("Erro ao validar assinatura do webhook.");
+    console.error("Erro ao validar a assinatura do webhook.");
 
     return NextResponse.json(
       { error: "Não foi possível validar a notificação." },
@@ -53,6 +57,7 @@ export async function POST(request: Request) {
   try {
     const paymentClient = new Payment(mercadoPago);
     const payment = await paymentClient.get({ id: dataId });
+
     console.log("Pagamento recebido:", {
       id: payment.id,
       status: payment.status,
@@ -60,8 +65,6 @@ export async function POST(request: Request) {
       payment_method_id: payment.payment_method_id,
       payment_type_id: payment.payment_type_id,
     });
-
-
 
     if (payment.status !== "approved") {
       return NextResponse.json({
@@ -74,7 +77,8 @@ export async function POST(request: Request) {
     if (
       !payment.external_reference ||
       payment.id == null ||
-      payment.transaction_amount == null
+      payment.transaction_amount == null ||
+      !payment.payment_method_id
     ) {
       return NextResponse.json(
         { error: "Dados do pagamento incompletos." },
@@ -123,32 +127,15 @@ export async function POST(request: Request) {
       payment.transaction_amount !== expectedBundle.price / 100 ||
       payment.currency_id !== "BRL"
     ) {
-      console.error("Valor ou moeda do pagamento não corresponde à compra.");
+      console.error(
+        "Valor ou moeda do pagamento não corresponde à compra."
+      );
 
       return NextResponse.json(
         { error: "Dados do pagamento não correspondem à compra." },
         { status: 400 }
       );
     }
-
-    const paymentMethodMatches =
-  attempt.payform === "PIX"
-    ? payment.payment_method_id === "pix"
-    : payment.payment_type_id === "credit_card";
-
-if (!paymentMethodMatches) {
-  console.error("Método de pagamento não corresponde à compra.", {
-    expected: attempt.payform,
-    paymentMethodId: payment.payment_method_id,
-    paymentTypeId: payment.payment_type_id,
-  });
-
-  return NextResponse.json(
-    { error: "Método de pagamento não corresponde à compra." },
-    { status: 400 }
-  );
-}
-
 
     await prisma.$transaction(async (tx) => {
       await tx.ticket.create({
@@ -160,7 +147,7 @@ if (!paymentMethodMatches) {
           degree: attempt.degree,
           phone: attempt.phone,
           bundle: attempt.bundle,
-          payform: attempt.payform,
+          payform: payment.payment_method_id!,
           amount: new Prisma.Decimal(payment.transaction_amount!),
           motive: attempt.motive,
           indication: attempt.indication,
@@ -192,7 +179,11 @@ if (!paymentMethodMatches) {
       });
     }
 
-    console.error("Erro ao processar pagamento e registrar ticket:",error);
+    console.error(
+      "Erro ao processar pagamento e registrar ticket:",
+      error
+    );
+
     return NextResponse.json(
       { error: "Não foi possível processar o pagamento." },
       { status: 500 }

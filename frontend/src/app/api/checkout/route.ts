@@ -1,10 +1,9 @@
+
 import { NextResponse } from "next/server";
 import { Preference } from "mercadopago";
 import { prisma } from "@/lib/prisma";
 import { mercadoPago } from "@/lib/mercadopago";
 import { courseBundles } from "@/lib/course-bundle";
-
-const paymentMethods = ["PIX", "CREDIT_CARD"] as const;
 
 export async function POST(request: Request) {
   let attemptId: string | undefined;
@@ -13,7 +12,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const { 
+    const {
       city,
       name,
       email,
@@ -21,20 +20,18 @@ export async function POST(request: Request) {
       degree,
       phone,
       bundle,
-      payform,
       motive,
       indication,
     } = body;
 
-    if (        //checagem redundante. Seu que o ZOD impede campos nulos, mas em caso mudemos uma hora, o back verifica também. 
+    if (
       !city ||
       !name ||
       !email ||
       !address ||
       !degree ||
       !phone ||
-      !bundle ||
-      !payform
+      !bundle
     ) {
       return NextResponse.json(
         { error: "Preencha todos os campos obrigatórios." },
@@ -52,15 +49,6 @@ export async function POST(request: Request) {
       );
     }
 
-    if (typeof payform !== "string" || !paymentMethods.includes(payform as (typeof paymentMethods)[number])) {
-        
-      return NextResponse.json(
-        { error: "Forma de pagamento inválida." },
-        { status: 400 }
-      );
-    }
-    const selectedPaymentMethod = payform as (typeof paymentMethods)[number]; // mudando o payform de string genérica pra comportar o enum
-
     const selectedBundle =
       courseBundles[bundle as keyof typeof courseBundles];
 
@@ -73,7 +61,6 @@ export async function POST(request: Request) {
         degree,
         phone,
         bundle,
-        payform: selectedPaymentMethod,
         motive: motive || null,
         indication: indication || null,
         expiresAt: new Date(Date.now() + 40 * 60 * 1000),
@@ -98,8 +85,6 @@ export async function POST(request: Request) {
           },
         ],
 
-        
-
         payer: {
           name,
           email,
@@ -110,13 +95,14 @@ export async function POST(request: Request) {
         expiration_date_from: now.toISOString(),
         expiration_date_to: expiresAt.toISOString(),
       },
-
     });
 
     preferenceCreated = true;
 
     if (!preference.id) {
-      throw new Error("O Mercado Pago não retornou o ID da preferência.");
+      throw new Error(
+        "O Mercado Pago não retornou o ID da preferência."
+      );
     }
 
     await prisma.checkoutAttempt.update({
@@ -130,7 +116,9 @@ export async function POST(request: Request) {
         : preference.sandbox_init_point ?? preference.init_point;
 
     if (!checkoutUrl) {
-      throw new Error("O Mercado Pago não retornou a URL do checkout.");
+      throw new Error(
+        "O Mercado Pago não retornou a URL do checkout."
+      );
     }
 
     return NextResponse.json({

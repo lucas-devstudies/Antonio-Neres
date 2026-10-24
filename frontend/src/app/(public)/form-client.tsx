@@ -1,3 +1,4 @@
+
 "use client";
 
 import { FormEvent, useState } from "react";
@@ -28,7 +29,6 @@ export default function FormClient() {
       degree: String(formData.get("degree") ?? "").trim(),
       phone: String(formData.get("phone") ?? "").trim(),
       bundle: String(formData.get("bundle") ?? ""),
-      payform: String(formData.get("payform") ?? ""),
       motive: String(formData.get("motive") ?? "").trim(),
       indication: String(formData.get("indication") ?? "").trim(),
     };
@@ -262,49 +262,6 @@ export default function FormClient() {
                   </p>
                   <p className="mt-4 text-sm font-medium text-emerald-400">
                     Selecionar pacote
-                  </p>
-                </div>
-              </label>
-            </div>
-          </section>
-
-          <div className="h-px bg-zinc-800" />
-
-          <section>
-            <h2 className="mb-5 text-lg font-semibold">
-              Forma de pagamento
-            </h2>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="cursor-pointer">
-                <input
-                  className="peer sr-only"
-                  type="radio"
-                  name="payform"
-                  value="PIX"
-                  defaultChecked
-                  required
-                />
-                <div className="rounded-xl border border-zinc-700 bg-zinc-900 p-4 transition peer-checked:border-emerald-400 peer-checked:bg-emerald-950/30 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400">
-                  <p className="font-semibold">PIX</p>
-                  <p className="mt-1 text-sm text-zinc-400">
-                    Pagamento instantâneo
-                  </p>
-                </div>
-              </label>
-
-              <label className="cursor-pointer">
-                <input
-                  className="peer sr-only"
-                  type="radio"
-                  name="payform"
-                  value="CREDIT_CARD"
-                  required
-                />
-                <div className="rounded-xl border border-zinc-700 bg-zinc-900 p-4 transition peer-checked:border-emerald-400 peer-checked:bg-emerald-950/30 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400">
-                  <p className="font-semibold">Cartão de crédito</p>
-                  <p className="mt-1 text-sm text-zinc-400">
-                    Pague com seu cartão
                   </p>
                 </div>
               </label>
