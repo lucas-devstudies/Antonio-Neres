@@ -1,8 +1,10 @@
+
 import { NextResponse } from "next/server";
-import {
-  WebhookSignatureValidator,
-  InvalidWebhookSignatureError,
-} from "mercadopago";
+import {  Payment,WebhookSignatureValidator, InvalidWebhookSignatureError} from "mercadopago";
+import { mercadoPago } from "@/lib/mercadopago";
+import { prisma } from "@/lib/prisma";
+import { courseBundles } from "@/lib/course-bundle";
+import { Prisma } from "@/generated/prisma/client";
 
 export async function POST(request: Request) {
   const url = new URL(request.url);
@@ -32,11 +34,6 @@ export async function POST(request: Request) {
       secret,
       toleranceSeconds: 300,
     });
-
-    return NextResponse.json({
-      received: true,
-      signatureValid: true,
-    });
   } catch (error) {
     if (error instanceof InvalidWebhookSignatureError) {
       return NextResponse.json(
@@ -49,6 +46,155 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       { error: "Não foi possível validar a notificação." },
+      { status: 500 }
+    );
+  }
+
+  try {
+    const paymentClient = new Payment(mercadoPago);
+    const payment = await paymentClient.get({ id: dataId });
+    console.log("Pagamento recebido:", {
+      id: payment.id,
+      status: payment.status,
+      external_reference: payment.external_reference,
+      payment_method_id: payment.payment_method_id,
+      payment_type_id: payment.payment_type_id,
+    });
+
+
+
+    if (payment.status !== "approved") {
+      return NextResponse.json({
+        received: true,
+        ticketCreated: false,
+        reason: "payment_not_approved",
+      });
+    }
+
+    if (
+      !payment.external_reference ||
+      payment.id == null ||
+      payment.transaction_amount == null
+    ) {
+      return NextResponse.json(
+        { error: "Dados do pagamento incompletos." },
+        { status: 400 }
+      );
+    }
+
+    const attempt = await prisma.checkoutAttempt.findUnique({
+      where: {
+        id: payment.external_reference,
+      },
+    });
+
+    if (!attempt) {
+      const existingTicket = await prisma.ticket.findUnique({
+        where: {
+          mercadoPagoId: String(payment.id),
+        },
+      });
+
+      if (existingTicket) {
+        return NextResponse.json({
+          received: true,
+          ticketCreated: false,
+          reason: "payment_already_processed",
+        });
+      }
+
+      return NextResponse.json(
+        { error: "Tentativa de compra não encontrada." },
+        { status: 404 }
+      );
+    }
+
+    const expectedBundle =
+      courseBundles[attempt.bundle as keyof typeof courseBundles];
+
+    if (!expectedBundle) {
+      return NextResponse.json(
+        { error: "Pacote da compra inválido." },
+        { status: 400 }
+      );
+    }
+
+    if (
+      payment.transaction_amount !== expectedBundle.price / 100 ||
+      payment.currency_id !== "BRL"
+    ) {
+      console.error("Valor ou moeda do pagamento não corresponde à compra.");
+
+      return NextResponse.json(
+        { error: "Dados do pagamento não correspondem à compra." },
+        { status: 400 }
+      );
+    }
+
+    const paymentMethodMatches =
+  attempt.payform === "PIX"
+    ? payment.payment_method_id === "pix"
+    : payment.payment_type_id === "credit_card";
+
+if (!paymentMethodMatches) {
+  console.error("Método de pagamento não corresponde à compra.", {
+    expected: attempt.payform,
+    paymentMethodId: payment.payment_method_id,
+    paymentTypeId: payment.payment_type_id,
+  });
+
+  return NextResponse.json(
+    { error: "Método de pagamento não corresponde à compra." },
+    { status: 400 }
+  );
+}
+
+
+    await prisma.$transaction(async (tx) => {
+      await tx.ticket.create({
+        data: {
+          city: attempt.city,
+          name: attempt.name,
+          email: attempt.email,
+          address: attempt.address,
+          degree: attempt.degree,
+          phone: attempt.phone,
+          bundle: attempt.bundle,
+          payform: attempt.payform,
+          amount: new Prisma.Decimal(payment.transaction_amount!),
+          motive: attempt.motive,
+          indication: attempt.indication,
+          status: "IN_PROGRESS",
+          mercadoPagoId: String(payment.id),
+        },
+      });
+
+      await tx.checkoutAttempt.delete({
+        where: {
+          id: attempt.id,
+        },
+      });
+    });
+
+    return NextResponse.json({
+      received: true,
+      ticketCreated: true,
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return NextResponse.json({
+        received: true,
+        ticketCreated: false,
+        reason: "payment_already_processed",
+      });
+    }
+
+    console.error("Erro ao processar pagamento e registrar ticket:",error);
+    return NextResponse.json(
+      { error: "Não foi possível processar o pagamento." },
       { status: 500 }
     );
   }

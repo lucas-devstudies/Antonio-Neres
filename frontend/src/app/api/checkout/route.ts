@@ -98,18 +98,7 @@ export async function POST(request: Request) {
           },
         ],
 
-        payment_methods: {
-            excluded_payment_types: selectedPaymentMethod === "PIX" // limitando forma de pagamento à que está no formulario
-            ? [
-                { id: "credit_card" },
-                { id: "debit_card" },
-                { id: "ticket" },
-                ]
-            : [
-                { id: "bank_transfer" },
-                { id: "ticket" },
-                ],
-        },
+        
 
         payer: {
           name,

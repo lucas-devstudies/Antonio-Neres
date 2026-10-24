@@ -103,7 +103,7 @@ model Ticket {
   motive        String?
   indication    String?
 
-  status        TicketStatus  @default(DONE)
+  status        TicketStatus  @default(IN_PROGRESS)
   mercadoPagoId String        @unique
 
   @@index([status])
