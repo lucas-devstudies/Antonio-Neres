@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   output: 'standalone',
-  allowedDevOrigins:['172.16.30.24']
+  allowedDevOrigins:['172.16.30.24','carried-specked-navy.ngrok-free.dev']
 };
 
 export default nextConfig;

@@ -1,6 +1,6 @@
 import { Footer } from "@/components/footer";
 import InfiniteSlider from "@/components/infiniteSlider";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardAction, CardDescription, CardTitle } from "@/components/ui/card";
 import { cn } from "cn";

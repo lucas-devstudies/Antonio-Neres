@@ -15,6 +15,7 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  updatedTickets Ticket[] @relation("TicketUpdatedBy")
   sessions      Session[]
   accounts      Account[]
 
@@ -68,4 +69,67 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+
+enum TicketStatus {
+  TO_DO
+  IN_PROGRESS
+  DONE
+}
+
+enum PaymentMethod {
+  PIX
+  CREDIT_CARD
+}
+
+model Ticket {
+  id            String        @id @default(uuid())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  updatedById   String?
+  updatedBy     User?         @relation("TicketUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  city          String
+  name          String
+  email         String
+  address       String
+  degree        String
+  phone         String
+  bundle        String
+  payform       PaymentMethod
+  amount        Decimal       @db.Decimal(10, 2)
+  motive        String?
+  indication    String?
+
+  status        TicketStatus  @default(DONE)
+  mercadoPagoId String        @unique
+
+  @@index([status])
+  @@index([email])
+  @@map("ticket")
+}
+
+
+model CheckoutAttempt {
+  id           String        @id @default(uuid())
+  createdAt    DateTime      @default(now())
+  expiresAt    DateTime
+
+  preferenceId String?       @unique
+
+  city         String
+  name         String
+  email        String
+  address      String
+  degree       String
+  phone        String
+  bundle       String
+  payform      PaymentMethod
+  motive       String?
+  indication   String?
+
+  @@index([expiresAt])
+  @@map("checkout_attempt")
 }
