@@ -6,6 +6,8 @@ import { Card, CardAction, CardDescription, CardTitle } from "@/components/ui/ca
 import { cn } from "cn";
 import Image from "next/image";
 import Link from "next/link";
+import FormClient from "./form-client";
+
 
 interface Cards{
   img:string;
@@ -42,7 +44,7 @@ export default function Home() {
                 Prepare-se para o vestibular com quem aprova há mais de 20 anos
               </h3>
               <div className="flex max-w-full flex-row mt-4 gap-2">
-                <Link className={cn(buttonVariants({variant:"default"}),' px-4 rounded-full')} href={'/register'}>Fazer parte</Link>
+                <Link className={cn(buttonVariants({variant:"default"}),' px-4 rounded-full')} href={'/cadastro'}>Fazer parte</Link>
                 <Link className={cn(buttonVariants({variant:"outline_primary"}),' px-4 rounded-full')} href={'/register'}>Saber mais</Link>
               </div>
             </div>

@@ -78,11 +78,6 @@ enum TicketStatus {
   DONE
 }
 
-enum PaymentMethod {
-  PIX
-  CREDIT_CARD
-}
-
 model Ticket {
   id            String        @id @default(uuid())
   createdAt     DateTime      @default(now())
@@ -98,12 +93,12 @@ model Ticket {
   degree        String
   phone         String
   bundle        String
-  payform       PaymentMethod
+  payform       String
   amount        Decimal       @db.Decimal(10, 2)
   motive        String?
   indication    String?
 
-  status        TicketStatus  @default(DONE)
+  status        TicketStatus  @default(IN_PROGRESS)
   mercadoPagoId String        @unique
 
   @@index([status])
@@ -126,7 +121,6 @@ model CheckoutAttempt {
   degree       String
   phone        String
   bundle       String
-  payform      PaymentMethod
   motive       String?
   indication   String?
 
