@@ -1,22 +1,40 @@
-
 "use client";
 
 import { FormEvent, useState } from "react";
 
-type CheckoutResponse = {
-  checkoutUrl?: string;
-  preferenceId?: string;
+type TicketResponse = {
   error?: string;
 };
+
+const bundles = [
+  {
+    id: "ONLINE",
+    name: "Método AN On-line",
+    price: "R$ 299,00",
+  },
+  {
+    id: "PRESENTIAL",
+    name: "Método AN Presencial",
+    price: "R$ 599,00",
+  },
+  {
+    id: "PRESENTIAL_PREMIUM",
+    name: "Método AN Presencial Premium",
+    price: "R$ 899,00",
+  },
+];
 
 export default function FormClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     setLoading(true);
     setError("");
+    setSuccess(false);
 
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -34,7 +52,7 @@ export default function FormClient() {
     };
 
     try {
-      const response = await fetch("/api/checkout", {
+      const response = await fetch("/api/tickets", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,21 +60,23 @@ export default function FormClient() {
         body: JSON.stringify(payload),
       });
 
-      const data: CheckoutResponse = await response.json();
+      const data: TicketResponse = await response.json();
 
-      if (!response.ok || !data.checkoutUrl) {
+      if (!response.ok) {
         throw new Error(
-          data.error ?? "Não foi possível iniciar o pagamento."
+          data.error ?? "Não foi possível realizar o cadastro."
         );
       }
 
-      window.location.assign(data.checkoutUrl);
+      form.reset();
+      setSuccess(true);
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
-          : "Ocorreu um erro ao iniciar o pagamento."
+          : "Ocorreu um erro ao realizar o cadastro."
       );
+    } finally {
       setLoading(false);
     }
   }
@@ -79,8 +99,7 @@ export default function FormClient() {
           </h1>
 
           <p className="mx-auto mt-3 max-w-xl text-zinc-400">
-            Preencha seus dados, escolha seu pacote e prossiga para o
-            pagamento seguro.
+            Preencha seus dados e escolha o pacote mais adequado para você.
           </p>
         </header>
 
@@ -212,59 +231,41 @@ export default function FormClient() {
             <h2 className="mb-2 text-lg font-semibold">
               Escolha seu pacote
             </h2>
+
             <p className="mb-5 text-sm text-zinc-400">
               Selecione a opção mais adequada para você.
             </p>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="relative cursor-pointer">
-                <input
-                  className="peer sr-only"
-                  type="radio"
-                  name="bundle"
-                  value="monthly"
-                  defaultChecked
-                  required
-                />
-                <div className="h-full rounded-xl border border-zinc-700 bg-zinc-900 p-5 transition peer-checked:border-emerald-400 peer-checked:bg-emerald-950/30 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400">
-                  <span className="text-sm text-zinc-300">
-                    Pacote mensal
-                  </span>
-                  <p className="mt-2 text-3xl font-bold">
-                    R$ 99,00
-                  </p>
-                  <p className="mt-1 text-sm text-zinc-400">
-                    Acesso por um mês
-                  </p>
-                  <p className="mt-4 text-sm font-medium text-emerald-400">
-                    Selecionar pacote
-                  </p>
-                </div>
-              </label>
+              {bundles.map((bundle, index) => (
+                <label
+                  key={bundle.id}
+                  className="relative cursor-pointer"
+                >
+                  <input
+                    className="peer sr-only"
+                    type="radio"
+                    name="bundle"
+                    value={bundle.id}
+                    defaultChecked={index === 0}
+                    required
+                  />
 
-              <label className="relative cursor-pointer">
-                <input
-                  className="peer sr-only"
-                  type="radio"
-                  name="bundle"
-                  value="quarterly"
-                  required
-                />
-                <div className="h-full rounded-xl border border-zinc-700 bg-zinc-900 p-5 transition peer-checked:border-emerald-400 peer-checked:bg-emerald-950/30 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400">
-                  <span className="text-sm text-zinc-300">
-                    Pacote trimestral
-                  </span>
-                  <p className="mt-2 text-3xl font-bold">
-                    R$ 269,00
-                  </p>
-                  <p className="mt-1 text-sm text-zinc-400">
-                    Acesso por três meses
-                  </p>
-                  <p className="mt-4 text-sm font-medium text-emerald-400">
-                    Selecionar pacote
-                  </p>
-                </div>
-              </label>
+                  <div className="h-full rounded-xl border border-zinc-700 bg-zinc-900 p-5 transition peer-checked:border-emerald-400 peer-checked:bg-emerald-950/30 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400">
+                    <span className="text-sm text-zinc-300">
+                      {bundle.name}
+                    </span>
+
+                    <p className="mt-2 text-3xl font-bold">
+                      {bundle.price}
+                    </p>
+
+                    <p className="mt-4 text-sm font-medium text-emerald-400">
+                      Selecionar pacote
+                    </p>
+                  </div>
+                </label>
+              ))}
             </div>
           </section>
 
@@ -306,6 +307,15 @@ export default function FormClient() {
             </div>
           </section>
 
+          {success && (
+            <div
+              role="status"
+              className="rounded-lg border border-emerald-800 bg-emerald-950/50 p-4 text-sm text-emerald-300"
+            >
+              Cadastro realizado com sucesso!
+            </div>
+          )}
+
           {error && (
             <div
               role="alert"
@@ -320,15 +330,12 @@ export default function FormClient() {
             disabled={loading}
             className="w-full rounded-xl bg-emerald-500 px-5 py-4 font-bold text-black transition hover:bg-emerald-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading
-              ? "Preparando pagamento..."
-              : "Continuar para pagamento"}
+            {loading ? "Enviando cadastro..." : "Realizar cadastro"}
           </button>
 
           <p className="text-center text-xs leading-relaxed text-zinc-500">
-            Seus dados serão enviados para iniciar o checkout. O registro
-            definitivo do atendimento ocorrerá após a confirmação do
-            pagamento.
+            Ao enviar o formulário, seus dados serão registrados para
+            que nossa equipe possa dar continuidade ao seu atendimento.
           </p>
         </form>
       </div>

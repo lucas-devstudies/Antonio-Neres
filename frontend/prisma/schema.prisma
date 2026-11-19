@@ -8,25 +8,25 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  updatedTickets Ticket[] @relation("TicketUpdatedBy")
-  sessions      Session[]
-  accounts      Account[]
+  id             String       @id
+  name           String
+  email          String       @unique
+  emailVerified  Boolean      @default(false)
+  image          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  accounts       Account[]
+  sessions       Session[]
+  updatedTickets Ticket[]     @relation("TicketUpdatedBy")
+  ticketNotes    TicketNote[] @relation("TicketNoteUpdatedBy")
 
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -34,7 +34,6 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
@@ -44,7 +43,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -54,6 +52,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -71,59 +70,47 @@ model Verification {
   @@map("verification")
 }
 
+model Ticket {
+  id          String       @id @default(uuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  updatedById String?
+  city        String
+  name        String
+  email       String
+  address     String
+  degree      String
+  phone       String
+  bundle      String
+  amount      Int
+  motive      String?
+  indication  String?
+  status      TicketStatus @default(IN_PROGRESS)
+  deleted     Boolean      @default(false)
+  position    Int          @default(0)
+  updatedBy   User?        @relation("TicketUpdatedBy", fields: [updatedById], references: [id])
+  ticketNote  TicketNote?
+
+  @@index([email])
+  @@index([deleted, status, position])
+  @@map("ticket")
+}
+
+model TicketNote {
+  id          String   @id @default(uuid())
+  ticketId    String   @unique
+  comment     String
+  updatedById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  ticket      Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  updatedBy   User?    @relation("TicketNoteUpdatedBy", fields: [updatedById], references: [id])
+
+  @@map("ticket_note")
+}
 
 enum TicketStatus {
   TO_DO
   IN_PROGRESS
   DONE
-}
-
-model Ticket {
-  id            String        @id @default(uuid())
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
-  updatedById   String?
-  updatedBy     User?         @relation("TicketUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
-
-  city          String
-  name          String
-  email         String
-  address       String
-  degree        String
-  phone         String
-  bundle        String
-  payform       String
-  amount        Decimal       @db.Decimal(10, 2)
-  motive        String?
-  indication    String?
-
-  status        TicketStatus  @default(IN_PROGRESS)
-  mercadoPagoId String        @unique
-
-  @@index([status])
-  @@index([email])
-  @@map("ticket")
-}
-
-
-model CheckoutAttempt {
-  id           String        @id @default(uuid())
-  createdAt    DateTime      @default(now())
-  expiresAt    DateTime
-
-  preferenceId String?       @unique
-
-  city         String
-  name         String
-  email        String
-  address      String
-  degree       String
-  phone        String
-  bundle       String
-  motive       String?
-  indication   String?
-
-  @@index([expiresAt])
-  @@map("checkout_attempt")
 }
