@@ -85,7 +85,7 @@ model Ticket {
   amount      Int
   motive      String?
   indication  String?
-  status      TicketStatus @default(IN_PROGRESS)
+  status      TicketStatus @default(TO_DO)
   deleted     Boolean      @default(false)
   position    Int          @default(0)
   updatedBy   User?        @relation("TicketUpdatedBy", fields: [updatedById], references: [id])
