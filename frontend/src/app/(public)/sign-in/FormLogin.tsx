@@ -17,7 +17,7 @@ export default function FormLogin(){
     const [showPassword,setShowPassword] = useState(false);
     //===============
     //comentar esse para login offline
-    const local = 'https://carried-specked-navy.ngrok-free.dev/sign-in';
+    const local = '/sign-in';
     
     //comentar esse para login online (ativar tunnel mgrok)
     //const local = 'http://localhost:3000/'; 
