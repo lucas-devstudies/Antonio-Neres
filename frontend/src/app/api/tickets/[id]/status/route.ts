@@ -11,6 +11,92 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+
+
+/**
+ * @swagger
+ * /api/tickets/{id}/status:
+ *   patch:
+ *     tags:
+ *       - Kanban
+ *     summary: Movimentar ticket no Kanban
+ *     description: >
+ *       Altera o status e/ou a posição de um ticket no Kanban.
+ *       Reorganiza automaticamente as posições dos tickets nas
+ *       colunas afetadas. Requer sessão administrativa.
+ *       As posições começam em zero.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: UUID do ticket que será movimentado.
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *               - position
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum:
+ *                   - TO_DO
+ *                   - IN_PROGRESS
+ *                   - DONE
+ *                 description: Coluna de destino do ticket.
+ *               position:
+ *                 type: integer
+ *                 minimum: 0
+ *                 description: Índice de destino, começando em zero.
+ *             additionalProperties: false
+ *           example:
+ *             status: IN_PROGRESS
+ *             position: 0
+ *     responses:
+ *       200:
+ *         description: Ticket movimentado com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Ticket movimentado com sucesso.
+ *                 ticket:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     status:
+ *                       type: string
+ *                       enum: [TO_DO, IN_PROGRESS, DONE]
+ *                     position:
+ *                       type: integer
+ *                     updatedById:
+ *                       type: string
+ *                       nullable: true
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *       400:
+ *         description: Status ou posição inválidos, ou posição fora da coluna.
+ *       401:
+ *         description: Sessão ausente ou inválida.
+ *       404:
+ *         description: Ticket não encontrado.
+ *       409:
+ *         description: Movimentação concorrente. Tente novamente.
+ *       500:
+ *         description: Erro interno ao movimentar ticket.
+ */
 export async function PATCH(
   request: Request,
   { params }: RouteContext
