@@ -13,6 +13,7 @@ const validRoutes = [
   "/register",
   "/admin",
   "/cadastro",
+  "/api-doc"
 ]
 
 const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = '/sign-in'

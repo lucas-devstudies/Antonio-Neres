@@ -3,6 +3,59 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { courseBundles } from "@/lib/course-bundle";
 
+
+
+/**
+ * @swagger
+ * /api/tickets:
+ *   post:
+ *     tags:
+ *       - Tickets
+ *     summary: Cadastrar um novo ticket
+ *     description: Cria diretamente um ticket com status TO_DO.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - city
+ *               - name
+ *               - email
+ *               - address
+ *               - degree
+ *               - phone
+ *               - bundle
+ *             properties:
+ *               city:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               address:
+ *                 type: string
+ *               degree:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               bundle:
+ *                 type: string
+ *                 description: Identificador definido em courseBundles.
+ *               motive:
+ *                 type: string
+ *               indication:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Ticket criado com sucesso.
+ *       400:
+ *         description: Dados inválidos ou incompletos.
+ *       500:
+ *         description: Erro interno do servidor.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -104,6 +157,59 @@ export async function POST(request: Request) {
 }
 
 
+/**
+ * @swagger
+ * /api/tickets:
+ *   get:
+ *     tags:
+ *       - Tickets
+ *     summary: Listar tickets
+ *     description: Retorna tickets não excluídos, ordenados por posição e data de criação. Requer sessão autenticada.
+ *     responses:
+ *       200:
+ *         description: Lista recuperada com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 tickets:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       city:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                       phone:
+ *                         type: string
+ *                       bundle:
+ *                         type: string
+ *                       amount:
+ *                         type: string
+ *                         description: Valor monetário retornado pelo Prisma Decimal.
+ *                       status:
+ *                         type: string
+ *                         enum: [TO_DO, IN_PROGRESS, DONE]
+ *                       position:
+ *                         type: integer
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *       401:
+ *         description: Sessão ausente ou inválida.
+ *       500:
+ *         description: Erro interno ao consultar tickets.
+ */
 export async function GET(request: Request) {
   try {
     const session = await auth.api.getSession({

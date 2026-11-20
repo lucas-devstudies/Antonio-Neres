@@ -7,6 +7,157 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+
+
+
+/**
+ * @swagger
+ * /api/tickets/{id}:
+ *   get:
+ *     tags:
+ *       - Tickets
+ *     summary: Consultar ticket por ID
+ *     description: Retorna um ticket não excluído, incluindo o administrador responsável pela última atualização e sua observação mais recente.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: UUID do ticket.
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Ticket recuperado com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ticket:
+ *                   type: object
+ *                   description: Ticket completo com os relacionamentos updatedBy e ticketNote.
+ *       401:
+ *         description: Sessão ausente ou inválida.
+ *       404:
+ *         description: Ticket não encontrado.
+ *       500:
+ *         description: Erro interno ao consultar ticket.
+ *
+ *   patch:
+ *     tags:
+ *       - Tickets
+ *     summary: Atualizar dados de um ticket
+ *     description: Atualiza os campos informados e registra o administrador responsável. O campo comment cria ou substitui a observação mais recente.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             minProperties: 1
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 120
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 maxLength: 254
+ *               phone:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 30
+ *               city:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 120
+ *               address:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 300
+ *               degree:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 120
+ *               motive:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 2000
+ *               indication:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 2000
+ *               comment:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 5000
+ *                 description: Substitui a observação anterior.
+ *           example:
+ *             name: "Aluno Exemplo"
+ *             phone: "92999999999"
+ *             comment: "Cadastro atualizado pelo administrador."
+ *     responses:
+ *       200:
+ *         description: Ticket atualizado com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 ticket:
+ *                   type: object
+ *       400:
+ *         description: Dados inválidos ou nenhum campo editável informado.
+ *       401:
+ *         description: Sessão ausente ou inválida.
+ *       404:
+ *         description: Ticket não encontrado.
+ *       500:
+ *         description: Erro interno ao atualizar ticket.
+ *
+ *   delete:
+ *     tags:
+ *       - Tickets
+ *     summary: Excluir logicamente um ticket
+ *     description: Define deleted como true, registra o administrador responsável e reorganiza as posições dos tickets restantes na mesma coluna do Kanban.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Ticket excluído com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Ticket excluído com sucesso."
+ *       401:
+ *         description: Sessão ausente ou inválida.
+ *       404:
+ *         description: Ticket não encontrado ou já excluído.
+ *       409:
+ *         description: Conflito de atualização. Tente novamente.
+ *       500:
+ *         description: Erro interno ao excluir ticket.
+ */
 export async function GET(
   request: Request,
   { params }: RouteContext
