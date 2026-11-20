@@ -275,3 +275,118 @@ export async function PATCH(
     );
   }
 }
+
+
+export async function DELETE(
+  request: Request,
+  { params }: RouteContext
+) {
+  try {
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "Acesso não autorizado." },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await params;
+
+    const deleted = await prisma.$transaction(
+      async (tx) => {
+        const current = await tx.ticket.findFirst({
+          where: {
+            id,
+            deleted: false,
+          },
+          select: {
+            status: true,
+          },
+        });
+
+        if (!current) return false;
+
+        const result = await tx.ticket.updateMany({
+          where: {
+            id,
+            deleted: false,
+          },
+          data: {
+            deleted: true,
+            updatedById: session.user.id,
+          },
+        });
+
+        if (result.count === 0) return false;
+
+        const tickets = await tx.ticket.findMany({
+          where: {
+            status: current.status,
+            deleted: false,
+          },
+          orderBy: [
+            { position: "asc" },
+            { createdAt: "asc" },
+            { id: "asc" },
+          ],
+          select: {
+            id: true,
+            position: true,
+          },
+        });
+
+        for (let position = 0; position < tickets.length; position++) {
+          const ticket = tickets[position];
+
+          if (ticket.position === position) continue;
+
+          await tx.ticket.update({
+            where: {
+              id: ticket.id,
+            },
+            data: {
+              position,
+            },
+          });
+        }
+
+        return true;
+      },
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      }
+    );
+
+    if (!deleted) {
+      return NextResponse.json(
+        { error: "Ticket não encontrado ou já excluído." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Ticket excluído com sucesso." },
+      { status: 200 }
+    );
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2034"
+    ) {
+      return NextResponse.json(
+        { error: "Conflito de atualização. Tente novamente." },
+        { status: 409 }
+      );
+    }
+
+    console.error("Erro ao excluir ticket:", error);
+
+    return NextResponse.json(
+      { error: "Erro interno ao excluir ticket." },
+      { status: 500 }
+    );
+  }
+}

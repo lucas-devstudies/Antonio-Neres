@@ -74,7 +74,7 @@ export async function POST(request: Request) {
           typeof body.indication === "string"
             ? body.indication.trim()
             : "",
-        status: "IN_PROGRESS",
+        status: "TO_DO",
       },
       select: {
         id: true,
