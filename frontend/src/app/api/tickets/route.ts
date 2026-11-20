@@ -1,3 +1,4 @@
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { courseBundles } from "@/lib/course-bundle";
@@ -101,3 +102,64 @@ export async function POST(request: Request) {
     );
   }
 }
+
+
+export async function GET(request: Request) {
+  try {
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "Acesso não autorizado." },
+        { status: 401 }
+      );
+    }
+
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        deleted: false,
+      },
+      orderBy: [
+        { position: "asc" },
+        { createdAt: "asc" },
+      ],
+      select: {
+        id: true,
+        name: true,
+        city: true,
+        email: true,
+        phone: true,
+        bundle: true,
+        amount: true,
+        status: true,
+        position: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+
+    console.log("Tickets recuperados do banco:");
+    console.log(JSON.stringify(tickets, null, 2));
+
+    return NextResponse.json(
+      { tickets },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control": "no-store",
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Erro ao consultar tickets:", error);
+
+    return NextResponse.json(
+      { error: "Erro interno ao consultar tickets." },
+      { status: 500 }
+    );
+  }
+}
+
