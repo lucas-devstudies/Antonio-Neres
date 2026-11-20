@@ -1,4 +1,4 @@
-# Relatório de Atividades — DB-03: Banco de Dados, Autenticação e API de Tickets
+# Relatório de Atividades — Banco de Dados, Autenticação e API de Tickets
 
 **Projeto:** Antonio Neres  
 **Área:** Backend — Banco de Dados, Autenticação e API REST  
