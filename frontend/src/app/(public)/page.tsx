@@ -6,7 +6,7 @@ import { Card, CardAction, CardDescription, CardTitle } from "@/components/ui/ca
 import { cn } from "cn";
 import Image from "next/image";
 import Link from "next/link";
-import FormClient from "./form-client";
+import FormClient from "./cadastro/form-client";
 
 
 interface Cards{
@@ -26,9 +26,9 @@ export default function Home() {
   ]
   
   return (
-    <div className="flex flex-col min-h-screen w-full bg-white dark:bg-black">
+    <div className="flex flex-col min-h-screen w-full bg-white dark:bg-black items-center">
       <Navbar />
-      <main className="flex-1 w-full h-auto max-w-screen pt-28 pb-12 flex flex-col gap-12 items-center sm:items-start">
+      <main className="flex-1 w-full h-auto max-w-[1920px] pt-28 pb-12 flex flex-col gap-12 items-center sm:items-start">
         <section className="w-full px-4  flex md:flex-row flex-col-reverse gap-6 items-center">
           <div className="w-full flex flex-col justify-between gap-6">
             <div>

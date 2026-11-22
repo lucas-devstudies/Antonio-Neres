@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+@custom-variant peer-checked-desc (&:is(:where(.peer:checked ~ *) *));
 @custom-variant dark (&:is(.dark *));
 
 :root {

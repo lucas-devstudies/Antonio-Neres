@@ -4,6 +4,12 @@ import React, { useState } from 'react'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Separator } from './ui/separator'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
 
 type ColumnId = 'todo' | 'in_progress' | 'done'
 
@@ -11,6 +17,7 @@ interface Task {
   id: string
   title: string
   status: ColumnId
+  responsible?: string,
   comment: string
 }
 
@@ -32,6 +39,7 @@ export function KanbanBoard() {
       id: '2',
       title: 'Yasmin Augusta',
       comment: 'Aguardando feedback',
+      responsible: 'Nilton',
       status: 'in_progress',
     },
     {
@@ -55,6 +63,7 @@ export function KanbanBoard() {
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null)
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null)
   const [dragOverColumn, setDragOverColumn] = useState<ColumnId | null>(null)
+  const [openModal, setOpenModal] = useState(false)
 
   const toggleColumn = (columnId: ColumnId) => {
     setExpandedColumns((prev) => ({
@@ -120,6 +129,8 @@ export function KanbanBoard() {
       clearDragState()
       return
     }
+
+
 
     setTasks((prev) => {
       const draggedTask = prev.find((task) => task.id === taskId)
@@ -240,6 +251,7 @@ export function KanbanBoard() {
                           handleDrop(e, column.id, task.id)
                         }
                         onDragEnd={clearDragState}
+                        onClick={() => setOpenModal(true)}
                         className={`cursor-grab transition-all hover:border-primary/50 py-0 active:cursor-grabbing ${
                           isBeingDragged
                             ? 'border-dashed opacity-30'
@@ -251,16 +263,36 @@ export function KanbanBoard() {
                             {task.title}
                           </CardTitle>
                           <Separator orientation='horizontal' style={{paddingTop:1,paddingBottom:1}}/>
-                          {task.comment && (
-                            <p className="text-xs text-muted-foreground">
-                              {task.comment}
-                            </p>
-                          )}
+                          <div className="flex justify-between items-center">
+                            {task.comment && (
+                              <p className="text-xs text-muted-foreground">
+                                {task.comment}
+                              </p>
+                            )}
+                            {task.responsible && (
+                              <Avatar className="h-8 w-8 bg-none">
+                                <AvatarImage src={task.responsible} alt={task.responsible} />
+                                <AvatarFallback className="rounded-full bg-primary text-white">{task.responsible[0]}{task.responsible[1]}</AvatarFallback>
+                              </Avatar>
+                            )}
+                          </div>
                         </CardHeader>
                       </Card>
                     </React.Fragment>
                   )
                 })}
+                <Dialog open={openModal} onOpenChange={setOpenModal}>
+                  <DialogTrigger></DialogTrigger>
+                  <DialogContent>
+                      <DialogHeader>
+                      <DialogTitle>Are you absolutely sure?</DialogTitle>
+                      <DialogDescription>
+                          This action cannot be undone. This will permanently delete your account
+                          and remove your data from our servers.
+                      </DialogDescription>
+                      </DialogHeader>
+                  </DialogContent>
+                </Dialog>
 
                 {/* Área visual para colunas vazias durante o arraste */}
                 {columnTasks.length === 0 && isOverColumn && (

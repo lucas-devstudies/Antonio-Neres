@@ -1,5 +1,7 @@
 "use client";
 
+import { AdIcon, MoveLeft, MoveLeftIcon } from "lucide-react";
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 
 type TicketResponse = {
@@ -80,46 +82,31 @@ export default function FormClient() {
       setLoading(false);
     }
   }
-
-  const inputClass =
-    "w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20";
-
-  const labelClass = "mb-2 block text-sm font-medium text-zinc-200";
-
+  
   return (
-    <main className="min-h-screen bg-black px-4 py-10 text-white sm:px-6">
-      <div className="mx-auto max-w-3xl">
+    <main className="flex-1 w-full  h-auto max-w-screen py-4 px-2 flex flex-col gap-12 items-center sm:items-start">
+      <div className="mx-auto max-w-3xl ">
+        <Link href={'/'}>
+          <MoveLeftIcon className="h-10 w-10 border border-border p-2 rounded-full hover:bg-gray-300"/>
+        </Link>
         <header className="mb-8 text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-emerald-400">
-            Antonio Neres
-          </p>
-
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Comece sua jornada
-          </h1>
-
-          <p className="mx-auto mt-3 max-w-xl text-zinc-400">
-            Preencha seus dados e escolha o pacote mais adequado para você.
-          </p>
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-primary">Antonio Neres</p>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Comece sua jornada</h1>
+          <p className="mx-auto mt-3 max-w-xl text-zinc-600">Preencha seus dados e escolha o pacote mais adequado para você.</p>
         </header>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-8 rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-2xl shadow-emerald-950/20 sm:p-8"
-        >
+          className="space-y-8 rounded-2xl border dark:bg-white/5 p-5 shadow-2xl shadow-emerald-950/20 sm:p-8">
           <section>
-            <h2 className="mb-5 text-lg font-semibold">
-              Dados pessoais
-            </h2>
+            <h2 className="mb-5 text-lg font-semibold">Dados pessoais</h2>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <label className={labelClass} htmlFor="name">
-                  Nome completo *
-                </label>
+              <div className="flex flex-col gap-1">
+                <label htmlFor="name">Nome completo *</label>
                 <input
-                  className={inputClass}
                   id="name"
+                  className="rounded-xl border border-border p-2"
                   name="name"
                   autoComplete="name"
                   placeholder="Seu nome completo"
@@ -127,29 +114,29 @@ export default function FormClient() {
                 />
               </div>
 
-              <div>
-                <label className={labelClass} htmlFor="email">
+              <div className="flex flex-col gap-1">
+                <label htmlFor="email">
                   E-mail *
                 </label>
                 <input
-                  className={inputClass}
                   id="email"
                   name="email"
                   type="email"
+                  className="rounded-xl border border-border p-2"
                   autoComplete="email"
                   placeholder="voce@exemplo.com"
                   required
                 />
               </div>
 
-              <div>
-                <label className={labelClass} htmlFor="phone">
+              <div className="flex flex-col gap-1">
+                <label htmlFor="phone">
                   Telefone *
                 </label>
                 <input
-                  className={inputClass}
                   id="phone"
                   name="phone"
+                  className="rounded-xl border border-border p-2"
                   type="tel"
                   autoComplete="tel"
                   placeholder="(92) 99999-9999"
@@ -157,28 +144,28 @@ export default function FormClient() {
                 />
               </div>
 
-              <div>
-                <label className={labelClass} htmlFor="city">
+              <div className="flex flex-col gap-1">
+                <label htmlFor="city">
                   Cidade *
                 </label>
                 <input
-                  className={inputClass}
                   id="city"
                   name="city"
+                  className="rounded-xl border border-border p-2"
                   autoComplete="address-level2"
                   placeholder="Sua cidade"
                   required
                 />
               </div>
 
-              <div>
-                <label className={labelClass} htmlFor="degree">
+              <div className="flex flex-col gap-1">
+                <label htmlFor="degree">
                   Escolaridade *
                 </label>
                 <select
-                  className={inputClass}
                   id="degree"
                   name="degree"
+                  className="rounded-xl border border-border p-2"
                   defaultValue=""
                   required
                 >
@@ -209,14 +196,14 @@ export default function FormClient() {
                 </select>
               </div>
 
-              <div className="sm:col-span-2">
-                <label className={labelClass} htmlFor="address">
+              <div className="flex flex-col gap-1">
+                <label htmlFor="address">
                   Endereço *
                 </label>
                 <input
-                  className={inputClass}
                   id="address"
                   name="address"
+                  className="rounded-xl border border-border p-2"
                   autoComplete="street-address"
                   placeholder="Rua, número e bairro"
                   required
@@ -224,18 +211,14 @@ export default function FormClient() {
               </div>
             </div>
           </section>
-
           <div className="h-px bg-zinc-800" />
-
           <section>
             <h2 className="mb-2 text-lg font-semibold">
               Escolha seu pacote
             </h2>
-
             <p className="mb-5 text-sm text-zinc-400">
               Selecione a opção mais adequada para você.
             </p>
-
             <div className="grid gap-4 sm:grid-cols-2">
               {bundles.map((bundle, index) => (
                 <label
@@ -251,18 +234,10 @@ export default function FormClient() {
                     required
                   />
 
-                  <div className="h-full rounded-xl border border-zinc-700 bg-zinc-900 p-5 transition peer-checked:border-emerald-400 peer-checked:bg-emerald-950/30 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400">
-                    <span className="text-sm text-zinc-300">
-                      {bundle.name}
-                    </span>
-
-                    <p className="mt-2 text-3xl font-bold">
-                      {bundle.price}
-                    </p>
-
-                    <p className="mt-4 text-sm font-medium text-emerald-400">
-                      Selecionar pacote
-                    </p>
+                  <div className="h-full rounded-xl border bg-kanban p-5 transition peer-checked:border-green-800 peer-checked:border-2 peer-checked:bg-primary/90 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400">
+                    <span className="text-sm font-medium text-black/50 dark:text-white">{bundle.name}</span>
+                    <p className="mt-2 text-3xl font-bold text-black/90 dark:text-white peer-checked-desc:text-white">{bundle.price}</p>
+                    <p className="mt-4 text-sm text-primary peer-checked-desc:text-white">Selecionar pacote</p>
                   </div>
                 </label>
               ))}
@@ -270,8 +245,7 @@ export default function FormClient() {
           </section>
 
           <div className="h-px bg-zinc-800" />
-
-          <section>
+          <section className="flex flex-col gap-1">
             <h2 className="mb-5 text-lg font-semibold">
               Informações adicionais
               <span className="ml-2 text-sm font-normal text-zinc-500">
@@ -280,27 +254,25 @@ export default function FormClient() {
             </h2>
 
             <div className="space-y-5">
-              <div>
-                <label className={labelClass} htmlFor="motive">
-                  Por que deseja fazer o curso?
-                </label>
+              <div className="flex flex-col gap-1">
+                <label htmlFor="motive">Por que deseja fazer o curso?</label>
                 <textarea
-                  className={inputClass}
                   id="motive"
                   name="motive"
+                  className="rounded-lg border border-border p-2"
                   rows={3}
                   placeholder="Conte um pouco sobre seus objetivos..."
                 />
               </div>
 
-              <div>
-                <label className={labelClass} htmlFor="indication">
+              <div className="flex flex-col gap-1">
+                <label htmlFor="indication">
                   Quem indicou nosso curso?
                 </label>
                 <input
-                  className={inputClass}
                   id="indication"
                   name="indication"
+                  className="rounded-lg border border-border p-2"
                   placeholder="Nome de quem indicou, se houver"
                 />
               </div>
@@ -328,7 +300,7 @@ export default function FormClient() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-emerald-500 px-5 py-4 font-bold text-black transition hover:bg-emerald-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-xl bg-primary/90 px-5 py-4 font-semibold text-white transition hover:bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Enviando cadastro..." : "Realizar cadastro"}
           </button>
