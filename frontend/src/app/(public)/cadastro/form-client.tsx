@@ -1,6 +1,6 @@
 "use client";
 
-import { AdIcon, MoveLeft, MoveLeftIcon } from "lucide-react";
+import { MoveLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
