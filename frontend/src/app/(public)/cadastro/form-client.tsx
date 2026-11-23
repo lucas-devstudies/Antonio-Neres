@@ -282,7 +282,7 @@ export default function FormClient() {
           {success && (
             <div
               role="status"
-              className="rounded-lg border border-emerald-800 bg-emerald-950/50 p-4 text-sm text-emerald-300"
+              className="rounded-lg border border-white/20 bg-emerald-950/50 p-4 text-sm text-emerald-300"
             >
               Cadastro realizado com sucesso!
             </div>

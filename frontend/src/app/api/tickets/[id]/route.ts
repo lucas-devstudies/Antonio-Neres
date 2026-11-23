@@ -103,8 +103,15 @@ type RouteContext = {
  *                 description: Substitui a observação anterior.
  *           example:
  *             name: "Aluno Exemplo"
+ *             email: "aluno.exemplo@example.com"
  *             phone: "92999999999"
+ *             city: "Parintins"
+ *             address: "Rua Exemplo, 123, Bairro Teste"
+ *             degree: "Ensino Médio"
+ *             motive: "Melhora no currículo."
+ *             indication: "Um amigo me indicou."
  *             comment: "Cadastro atualizado pelo administrador."
+ *             
  *     responses:
  *       200:
  *         description: Ticket atualizado com sucesso.

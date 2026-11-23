@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Separator } from './ui/separator'
@@ -9,62 +9,49 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
-
-type ColumnId = 'todo' | 'in_progress' | 'done'
-
-interface Task {
-  id: string
-  title: string
-  status: ColumnId
-  responsible?: string,
-  comment: string
-}
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
+import { getAllTasks, getTaskById, updateTask } from '@/services/api'
+import { ColumnId, TaskAll, TaskBasic } from '@/models/ticket'
+import { Field, FieldGroup } from './ui/field'
+import { Label } from './ui/label'
+import { Input } from './ui/input'
+import { formatCentsToBRL } from '@/utils/formatCentes'
+import { Button } from './ui/button'
 
 const COLUMNS: { id: ColumnId; title: string }[] = [
-  { id: 'todo', title: 'A Fazer' },
+  { id: 'TO_DO', title: 'A Fazer' },
   { id: 'in_progress', title: 'Em Progresso' },
   { id: 'done', title: 'Concluído' },
 ]
 
 export function KanbanBoard() {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: '1',
-      title: 'Carlos Andrade',
-      comment: 'Precisa ser revisado',
-      status: 'todo',
-    },
-    {
-      id: '2',
-      title: 'Yasmin Augusta',
-      comment: 'Aguardando feedback',
-      responsible: 'Nilton',
-      status: 'in_progress',
-    },
-    {
-      id: '3',
-      title: 'Roberto Silva',
-      comment: 'Concluído',
-      status: 'done',
-    },
-  ])
-
-  // No mobile, todas as colunas começam abertas.
-  // No desktop, o estado não interfere: todas ficam abertas.
-  const [expandedColumns, setExpandedColumns] = useState<
-    Record<ColumnId, boolean>
-  >({
-    todo: true,
-    in_progress: true,
-    done: true,
-  })
-
+  
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null)
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null)
   const [dragOverColumn, setDragOverColumn] = useState<ColumnId | null>(null)
   const [openModal, setOpenModal] = useState(false)
+  const [tasks, setTasks] = useState<TaskBasic[]>();
+  const [task, setTask] = useState<TaskAll | null>(null)
+  
+  useEffect(() => {
+    async function loadTasks() {
+      try {
+        const response = await getAllTasks();
+        setTasks(response);
+      } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+      }
+    }
+    loadTasks();
+  }, []);
 
+  // No mobile, todas as colunas começam abertas.
+  // No desktop, o estado não interfere: todas ficam abertas.
+  const [expandedColumns, setExpandedColumns] = useState<Record<ColumnId, boolean>>({
+    TO_DO: true,
+    in_progress: true,
+    done: true,
+  })
   const toggleColumn = (columnId: ColumnId) => {
     setExpandedColumns((prev) => ({
       ...prev,
@@ -133,14 +120,14 @@ export function KanbanBoard() {
 
 
     setTasks((prev) => {
-      const draggedTask = prev.find((task) => task.id === taskId)
+      const draggedTask = prev!.find((task) => task.id === taskId)
 
       if (!draggedTask) return prev
 
       // Remove a tarefa arrastada da lista.
-      const remainingTasks = prev.filter((task) => task.id !== taskId)
+      const remainingTasks = prev!.filter((task) => task.id !== taskId)
 
-      const updatedTask: Task = {
+      const updatedTask: TaskBasic = {
         ...draggedTask,
         status: targetStatus,
       }
@@ -178,10 +165,28 @@ export function KanbanBoard() {
     clearDragState()
   }
 
+
+  async function updateData(task: TaskAll){
+    try{
+        const response  = await updateTask(task.id, task);
+        console.log(response);
+        setOpenModal(false);
+    }catch(error){
+        console.error('Erro ao atualizar dados:', error);
+    }
+  }
+
+  async function loadTask(taskId: string) {
+    const response = await getTaskById(taskId);
+    if (response) {
+      setTask(response);
+    }
+  }
+
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 p-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {COLUMNS.map((column) => {
+        {tasks ? COLUMNS.map((column)=> {
           const columnTasks = tasks.filter(
             (task) => task.status === column.id,
           )
@@ -203,7 +208,7 @@ export function KanbanBoard() {
               {/* Cabeçalho: clicável no mobile e sempre aberto no desktop */}
               <button
                 type="button"
-                onClick={() => toggleColumn(column.id)}
+                onClick={() =>toggleColumn(column.id)}
                 aria-expanded={isExpanded}
                 className="flex w-full items-center justify-between gap-3 text-left md:cursor-default"
               >
@@ -251,7 +256,7 @@ export function KanbanBoard() {
                           handleDrop(e, column.id, task.id)
                         }
                         onDragEnd={clearDragState}
-                        onClick={() => setOpenModal(true)}
+                        onClick={() => { loadTask(task.id); setOpenModal(true); }}
                         className={`cursor-grab transition-all hover:border-primary/50 py-0 active:cursor-grabbing ${
                           isBeingDragged
                             ? 'border-dashed opacity-30'
@@ -260,19 +265,21 @@ export function KanbanBoard() {
                       >
                         <CardHeader className="p-3">
                           <CardTitle className="text-sm font-medium">
-                            {task.title}
+                            {task.name}
                           </CardTitle>
-                          <Separator orientation='horizontal' style={{paddingTop:1,paddingBottom:1}}/>
+                          {task.ticketNote?.comment && (
+                            <Separator orientation='horizontal' style={{paddingTop:1,paddingBottom:1}}/>
+                          )}
                           <div className="flex justify-between items-center">
-                            {task.comment && (
+                            {task.ticketNote?.comment && (
                               <p className="text-xs text-muted-foreground">
-                                {task.comment}
+                                {task.ticketNote.comment}
                               </p>
                             )}
-                            {task.responsible && (
+                            {task.ticketNote?.name_user && (
                               <Avatar className="h-8 w-8 bg-none">
-                                <AvatarImage src={task.responsible} alt={task.responsible} />
-                                <AvatarFallback className="rounded-full bg-primary text-white">{task.responsible[0]}{task.responsible[1]}</AvatarFallback>
+                                <AvatarImage src={task.ticketNote.name_user} alt={task.ticketNote.name_user} />
+                                <AvatarFallback className="rounded-full bg-primary text-white">{task.ticketNote.name_user[0]}{task.ticketNote.name_user[1]}</AvatarFallback>
                               </Avatar>
                             )}
                           </div>
@@ -282,15 +289,63 @@ export function KanbanBoard() {
                   )
                 })}
                 <Dialog open={openModal} onOpenChange={setOpenModal}>
-                  <DialogTrigger></DialogTrigger>
                   <DialogContent>
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        if (!task) return;
+                        updateData(task);
+                      }}
+                    >
                       <DialogHeader>
-                      <DialogTitle>Are you absolutely sure?</DialogTitle>
-                      <DialogDescription>
-                          This action cannot be undone. This will permanently delete your account
-                          and remove your data from our servers.
-                      </DialogDescription>
+                        <DialogTitle className="text-lg font-bold">Informações do Cliente</DialogTitle>
+                        <DialogDescription>
+                          Acesse os dados do cliente e edite conforme a necessidade.
+                        </DialogDescription>
                       </DialogHeader>
+                      <FieldGroup className="flex p-2 flex-col max-h-120 overflow-hidden overflow-y-scroll">
+                        <Field>
+                          <Label htmlFor="name" className="font-bold">Nome</Label>
+                          <Input id="name" value={task?.name ?? ''} onChange={(e)=>setTask({...task!, name: e.target.value})} />
+                        </Field>
+                        <Field>
+                          <Label htmlFor="email" className="font-semibold">Email</Label>
+                          <Input id="email" value={task?.email ?? '' } onChange={(e)=>setTask({...task!, email: e.target.value})}  />
+                        </Field>
+                        <Field>
+                          <Label htmlFor="phone" className="font-semibold">Telefone</Label>
+                          <Input id="phone" value={task?.phone ?? ''} onChange={(e)=>setTask({...task!, phone: e.target.value})} />
+                        </Field>
+                        <Field>
+                          <Label htmlFor="address" className="font-semibold">Endereço</Label>
+                          <Input id="address" value={task?.address ?? ''} onChange={(e)=>setTask({...task!, address: e.target.value})} />
+                        </Field>
+                        <Field>
+                          <Label htmlFor="degree" className="font-semibold">Grau de instrução</Label>
+                          <Input id="degree" value={task?.degree ?? ''} onChange={(e)=>setTask({...task!, degree: e.target.value})} />
+                        </Field>
+                        <Field>
+                          <Label htmlFor="bundle" className="font-semibold">Pacote</Label>
+                          <Input id="bundle" value={task?.bundle ?? ''} onChange={(e)=>setTask({...task!, bundle: e.target.value})} />
+                        </Field>
+                        <Field>
+                          <Label htmlFor="amount" className="font-semibold">Valor</Label>
+                          <Input id="amount" value={formatCentsToBRL(task?.amount || 0)} onChange={(e)=>setTask({...task!, amount: parseInt(e.target.value)})} />
+                        </Field>
+                        <Field>
+                          <Label htmlFor="comment" className="font-semibold">Comentário</Label>
+                          <textarea id="comment" className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" value={task?.ticketNote?.comment ?? ''} onChange={(e) => { if (!task) return; setTask({ ...task, ticketNote: { ...task.ticketNote, name_user: task.ticketNote?.name_user ?? '', comment: e.target.value } }); }} />                        
+                          </Field>
+                      </FieldGroup>
+                      <DialogFooter className="mt-4">
+                        <DialogClose asChild>
+                          <Button type="button" variant="outline">
+                            Cancelar
+                          </Button>
+                        </DialogClose>
+                        <Button type="submit">Atualizar</Button>
+                      </DialogFooter>
+                    </form>
                   </DialogContent>
                 </Dialog>
 
@@ -308,7 +363,9 @@ export function KanbanBoard() {
               </div>
             </div>
           )
-        })}
+        }):(
+          <p>Não há nada</p>
+        )}
       </div>
     </div>
   )
