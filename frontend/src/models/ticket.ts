@@ -1,4 +1,4 @@
-export type ColumnId = 'TO_DO' | 'in_progress' | 'done'
+export type ColumnId = 'TO_DO' | 'IN_PROGRESS' | 'DONE'
 
 export interface TaskBasic {
     id: string,
@@ -34,4 +34,8 @@ export interface TaskAll{
 export interface TicketNote {
     name_user: string,
     comment: string,
+}
+export interface ManageTicket{
+    status: string,
+    position: number,
 }
