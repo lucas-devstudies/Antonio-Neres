@@ -265,12 +265,12 @@ export function KanbanBoard() {
                               {cardTask.ticketNote.comment}
                             </p>
                           )}
-                          {cardTask.ticketNote?.name_user && (
+                          {cardTask.updatedBy?.name && (
                             <Avatar className="h-8 w-8 bg-none">
-                              <AvatarImage src={cardTask.ticketNote.name_user} alt={cardTask.ticketNote.name_user} />
+                              <AvatarImage src={cardTask.updatedBy.name} alt={cardTask.updatedBy.name} />
                               <AvatarFallback className="rounded-full bg-primary text-white">
-                                {cardTask.ticketNote.name_user[0]}
-                                {cardTask.ticketNote.name_user[1]}
+                                {cardTask.updatedBy.name[0]}
+                                {cardTask.updatedBy.name[1]}
                               </AvatarFallback>
                             </Avatar>
                           )}

@@ -44,15 +44,18 @@ type RouteContext = {
  *       500:
  *         description: Erro interno ao consultar ticket.
  *
- *   patch:
+  *   patch:
  *     tags:
  *       - Tickets
  *     summary: Atualizar dados de um ticket
- *     description: Atualiza os campos informados e registra o administrador responsável. O campo comment cria ou substitui a observação mais recente.
+ *     description: Atualiza campos editáveis de um ticket ativo e registra o administrador responsável. A propriedade ticketNote permite criar ou substituir a observação atual.
+ *     security:
+ *       - cookieAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: UUID do ticket.
  *         schema:
  *           type: string
  *           format: uuid
@@ -96,11 +99,16 @@ type RouteContext = {
  *                 type: string
  *                 nullable: true
  *                 maxLength: 2000
- *               comment:
- *                 type: string
- *                 minLength: 1
- *                 maxLength: 5000
- *                 description: Substitui a observação anterior.
+ *               ticketNote:
+ *                 type: object
+ *                 required:
+ *                   - comment
+ *                 properties:
+ *                   comment:
+ *                     type: string
+ *                     minLength: 0
+ *                     maxLength: 5000
+ *                     description: Texto da observação. Uma string vazia remove a observação existente.
  *           example:
  *             name: "Aluno Exemplo"
  *             email: "aluno.exemplo@example.com"
@@ -110,8 +118,8 @@ type RouteContext = {
  *             degree: "Ensino Médio"
  *             motive: "Melhora no currículo."
  *             indication: "Um amigo me indicou."
- *             comment: "Cadastro atualizado pelo administrador."
- *             
+ *             ticketNote:
+ *               comment: "Cadastro atualizado pelo administrador."
  *     responses:
  *       200:
  *         description: Ticket atualizado com sucesso.
@@ -122,8 +130,10 @@ type RouteContext = {
  *               properties:
  *                 message:
  *                   type: string
+ *                   example: "Ticket atualizado com sucesso."
  *                 ticket:
  *                   type: object
+ *                   description: Ticket completo atualizado, incluindo updatedBy e ticketNote.
  *       400:
  *         description: Dados inválidos ou nenhum campo editável informado.
  *       401:
@@ -132,7 +142,7 @@ type RouteContext = {
  *         description: Ticket não encontrado.
  *       500:
  *         description: Erro interno ao atualizar ticket.
- *
+ * 
  *   delete:
  *     tags:
  *       - Tickets
@@ -207,13 +217,8 @@ export async function GET(
           },
         },
       },
-
-      
-      
     });
 
-      console.log("Ticket recuperado do banco:");
-      console.log(JSON.stringify(ticket, null, 2));
 
     if (!ticket) {
       return NextResponse.json(
@@ -222,7 +227,6 @@ export async function GET(
       );
     }
 
-    
 
 
     return NextResponse.json(
@@ -339,13 +343,15 @@ export async function PATCH(
       changed = true;
     }
 
-    if ("comment" in body) {
-      const comment = body.comment;
+    if ("ticketNote" in body) {
+      const ticketNote = body.ticketNote;
 
       if (
-        typeof comment !== "string" ||
-        !comment.trim() ||
-        comment.trim().length > 5000
+        !ticketNote ||
+        typeof ticketNote !== "object" ||
+        Array.isArray(ticketNote) ||
+        typeof ticketNote.comment !== "string" ||
+        ticketNote.comment.length > 5000
       ) {
         return NextResponse.json(
           { error: "Observação inválida." },
@@ -353,25 +359,35 @@ export async function PATCH(
         );
       }
 
-      data.ticketNote = {
-        upsert: {
-          create: {
-            comment: comment.trim(),
-            updatedBy: {
-              connect: { id: session.user.id },
+      const comment = ticketNote.comment.trim();
+
+      if (comment === "") {
+        data.ticketNote = {
+          delete: true,
+        };
+      } else {
+        data.ticketNote = {
+          upsert: {
+            create: {
+              comment,
+              updatedBy: {
+                connect: { id: session.user.id },
+              },
+            },
+            update: {
+              comment,
+              updatedBy: {
+                connect: { id: session.user.id },
+              },
             },
           },
-          update: {
-            comment: comment.trim(),
-            updatedBy: {
-              connect: { id: session.user.id },
-            },
-          },
-        },
-      };
+        };
+      }
 
       changed = true;
     }
+
+
 
     if (!changed) {
       return NextResponse.json(
@@ -379,6 +395,22 @@ export async function PATCH(
         { status: 400 }
       );
     }
+
+    if (
+      data.ticketNote &&
+      "delete" in data.ticketNote
+    ) {
+      const existingNote = await prisma.ticketNote.findUnique({
+        where: { ticketId: id },
+        select: { id: true },
+      });
+
+      if (!existingNote) {
+        delete data.ticketNote;
+      }
+    }
+
+
 
     const ticket = await prisma.ticket.update({
       where: {

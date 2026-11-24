@@ -11,6 +11,7 @@ export interface TaskBasic {
     amount: number,
     status: ColumnId,
     position: number,
+    updatedBy?: updatedBy,
     ticketNote?: TicketNote,
 }
 
@@ -28,6 +29,7 @@ export interface TaskAll{
     indication: string,
     status: ColumnId,
     position: number,
+    updatedBy?: updatedBy,
     ticketNote?: TicketNote,
 }
 
@@ -38,4 +40,8 @@ export interface TicketNote {
 export interface ManageTicket{
     status: string,
     position: number,
+}
+
+export interface updatedBy{
+    name: string
 }
