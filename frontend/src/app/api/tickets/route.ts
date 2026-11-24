@@ -3,8 +3,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { courseBundles } from "@/lib/course-bundle";
 
-
-
 /**
  * @swagger
  * /api/tickets:
@@ -12,7 +10,7 @@ import { courseBundles } from "@/lib/course-bundle";
  *     tags:
  *       - Tickets
  *     summary: Cadastrar um novo ticket
- *     description: Cria diretamente um ticket com status TO_DO.
+ *     description: Cria um ticket público com status inicial TO_DO. O valor é definido pelo pacote no backend.
  *     requestBody:
  *       required: true
  *       content:
@@ -43,7 +41,7 @@ import { courseBundles } from "@/lib/course-bundle";
  *                 type: string
  *               bundle:
  *                 type: string
- *                 description: Identificador definido em courseBundles.
+ *                 enum: [ONLINE, PRESENTIAL, PRESENTIAL_PREMIUM]
  *               motive:
  *                 type: string
  *               indication:
@@ -51,6 +49,33 @@ import { courseBundles } from "@/lib/course-bundle";
  *     responses:
  *       201:
  *         description: Ticket criado com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Cadastro realizado com sucesso.
+ *                 ticket:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     bundle:
+ *                       type: string
+ *                     amount:
+ *                       type: integer
+ *                       description: Valor do pacote em centavos.
+ *                     status:
+ *                       type: string
+ *                       enum: [TO_DO]
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
  *       400:
  *         description: Dados inválidos ou incompletos.
  *       500:
@@ -58,7 +83,16 @@ import { courseBundles } from "@/lib/course-bundle";
  */
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    let body: Record<string, unknown>;
+
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "JSON inválido." },
+        { status: 400 }
+      );
+    }
 
     if (!body || typeof body !== "object" || Array.isArray(body)) {
       return NextResponse.json(
@@ -89,14 +123,16 @@ export async function POST(request: Request) {
       }
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email.trim())) {
+    const email = (body.email as string).trim();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json(
         { error: "E-mail inválido." },
         { status: 400 }
       );
     }
 
-    const bundleId = body.bundle.trim();
+    const bundleId = (body.bundle as string).trim();
 
     if (!Object.prototype.hasOwnProperty.call(courseBundles, bundleId)) {
       return NextResponse.json(
@@ -111,12 +147,12 @@ export async function POST(request: Request) {
 
     const ticket = await prisma.ticket.create({
       data: {
-        city: body.city.trim(),
-        name: body.name.trim(),
-        email: body.email.trim(),
-        address: body.address.trim(),
-        degree: body.degree.trim(),
-        phone: body.phone.trim(),
+        city: (body.city as string).trim(),
+        name: (body.name as string).trim(),
+        email,
+        address: (body.address as string).trim(),
+        degree: (body.degree as string).trim(),
+        phone: (body.phone as string).trim(),
         bundle: bundleId,
         amount: bundle.price,
         motive:
@@ -156,7 +192,6 @@ export async function POST(request: Request) {
   }
 }
 
-
 /**
  * @swagger
  * /api/tickets:
@@ -164,10 +199,12 @@ export async function POST(request: Request) {
  *     tags:
  *       - Tickets
  *     summary: Listar tickets
- *     description: Retorna tickets não excluídos, ordenados por posição e data de criação. Requer sessão autenticada.
+ *     description: Retorna todos os tickets ativos, incluindo dados completos, administrador responsável pela última atualização e observação associada. Requer autenticação.
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       200:
- *         description: Lista recuperada com sucesso.
+ *         description: Tickets recuperados com sucesso.
  *         content:
  *           application/json:
  *             schema:
@@ -181,30 +218,87 @@ export async function POST(request: Request) {
  *                       id:
  *                         type: string
  *                         format: uuid
- *                       name:
- *                         type: string
- *                       city:
- *                         type: string
- *                       email:
- *                         type: string
- *                       phone:
- *                         type: string
- *                       bundle:
- *                         type: string
- *                       amount:
- *                         type: string
- *                         description: Valor monetário retornado pelo Prisma Decimal.
- *                       status:
- *                         type: string
- *                         enum: [TO_DO, IN_PROGRESS, DONE]
- *                       position:
- *                         type: integer
  *                       createdAt:
  *                         type: string
  *                         format: date-time
  *                       updatedAt:
  *                         type: string
  *                         format: date-time
+ *                       updatedById:
+ *                         type: string
+ *                         nullable: true
+ *                       city:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                         format: email
+ *                       address:
+ *                         type: string
+ *                       degree:
+ *                         type: string
+ *                       phone:
+ *                         type: string
+ *                       bundle:
+ *                         type: string
+ *                       amount:
+ *                         type: integer
+ *                         description: Valor em centavos.
+ *                       motive:
+ *                         type: string
+ *                         nullable: true
+ *                       indication:
+ *                         type: string
+ *                         nullable: true
+ *                       status:
+ *                         type: string
+ *                         enum: [TO_DO, IN_PROGRESS, DONE]
+ *                       position:
+ *                         type: integer
+ *                       deleted:
+ *                         type: boolean
+ *                         example: false
+ *                       updatedBy:
+ *                         type: object
+ *                         nullable: true
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                           name:
+ *                             type: string
+ *                           email:
+ *                             type: string
+ *                             format: email
+ *                       ticketNote:
+ *                         type: object
+ *                         nullable: true
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           ticketId:
+ *                             type: string
+ *                             format: uuid
+ *                           comment:
+ *                             type: string
+ *                           updatedById:
+ *                             type: string
+ *                             nullable: true
+ *                           createdAt:
+ *                             type: string
+ *                             format: date-time
+ *                           updatedAt:
+ *                             type: string
+ *                             format: date-time
+ *                           updatedBy:
+ *                             type: object
+ *                             nullable: true
+ *                             properties:
+ *                               id:
+ *                                 type: string
+ *                               name:
+ *                                 type: string
  *       401:
  *         description: Sessão ausente ou inválida.
  *       500:
@@ -227,25 +321,30 @@ export async function GET(request: Request) {
       where: {
         deleted: false,
       },
-
-      //ordena por posição e depois por data de criação
       orderBy: [
+        { status: "asc" },
         { position: "asc" },
         { createdAt: "asc" },
+        { id: "asc" },
       ],
-      select: {
-        id: true,
-        name: true,
-        city: true,
-        address: true,
-        email: true,
-        phone: true,
-        bundle: true,
-        amount: true,
-        status: true,
-        position: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
+        updatedBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        ticketNote: {
+          include: {
+            updatedBy: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -267,4 +366,3 @@ export async function GET(request: Request) {
     );
   }
 }
-
