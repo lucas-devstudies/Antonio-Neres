@@ -1,4 +1,7 @@
+'use client'
+
 import { authClient } from "@/lib/auth/auth-client";
+import { getUser } from "@/services/user";
 import { useRouter } from "next/navigation";
 
 export function useSignOut() {

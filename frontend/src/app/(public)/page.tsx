@@ -6,7 +6,6 @@ import { Card, CardAction, CardDescription, CardTitle } from "@/components/ui/ca
 import { cn } from "cn";
 import Image from "next/image";
 import Link from "next/link";
-import FormClient from "./cadastro/form-client";
 
 
 interface Cards{

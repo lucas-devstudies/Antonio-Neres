@@ -10,7 +10,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
-import { getAllTasks, getTaskById, updateTask } from '@/services/api'
+import { getAllTasks, getTaskById, updatePositionTask, updateTask } from '@/services/api'
 import { ColumnId, TaskAll, TaskBasic } from '@/models/ticket'
 import { Field, FieldGroup } from './ui/field'
 import { Label } from './ui/label'
@@ -20,8 +20,8 @@ import { Button } from './ui/button'
 
 const COLUMNS: { id: ColumnId; title: string }[] = [
   { id: 'TO_DO', title: 'A Fazer' },
-  { id: 'in_progress', title: 'Em Progresso' },
-  { id: 'done', title: 'Concluído' },
+  { id: 'IN_PROGRESS', title: 'Em Progresso' },
+  { id: 'DONE', title: 'Concluído' },
 ]
 
 export function KanbanBoard() {
@@ -32,6 +32,14 @@ export function KanbanBoard() {
   const [openModal, setOpenModal] = useState(false)
   const [tasks, setTasks] = useState<TaskBasic[]>();
   const [task, setTask] = useState<TaskAll | null>(null)
+  
+  // No mobile, todas as colunas começam abertas.
+  // No desktop, o estado não interfere: todas ficam abertas.
+  const [expandedColumns, setExpandedColumns] = useState<Record<ColumnId, boolean>>({
+    TO_DO: true,
+    IN_PROGRESS: true,
+    DONE: true,
+  })
   
   useEffect(() => {
     async function loadTasks() {
@@ -45,13 +53,6 @@ export function KanbanBoard() {
     loadTasks();
   }, []);
 
-  // No mobile, todas as colunas começam abertas.
-  // No desktop, o estado não interfere: todas ficam abertas.
-  const [expandedColumns, setExpandedColumns] = useState<Record<ColumnId, boolean>>({
-    TO_DO: true,
-    in_progress: true,
-    done: true,
-  })
   const toggleColumn = (columnId: ColumnId) => {
     setExpandedColumns((prev) => ({
       ...prev,
@@ -102,7 +103,7 @@ export function KanbanBoard() {
     setDragOverColumn(null)
   }
 
-  const handleDrop = (
+  const handleDrop = async (
     e: React.DragEvent<HTMLElement>,
     targetStatus: ColumnId,
     targetTaskId?: string,
@@ -111,60 +112,66 @@ export function KanbanBoard() {
     e.stopPropagation()
 
     const taskId = e.dataTransfer.getData('taskId') || draggedTaskId
+    clearDragState()
 
-    if (!taskId) {
-      clearDragState()
-      return
+    if (!taskId || !tasks) return
+
+    const previousTasks = tasks
+    const draggedTask = tasks.find((t) => t.id === taskId)
+    if (!draggedTask) return
+
+    // Remove a tarefa arrastada da lista atual
+    const remainingTasks = tasks.filter((t) => t.id !== taskId)
+
+    const updatedTask: TaskBasic = {
+      ...draggedTask,
+      status: targetStatus,
     }
 
+    let newTasks: TaskBasic[]
 
+    // Se soltou em cima de outro card, insere antes dele
+    if (targetTaskId && targetTaskId !== taskId) {
+      const targetIndex = remainingTasks.findIndex((t) => t.id === targetTaskId)
 
-    setTasks((prev) => {
-      const draggedTask = prev!.find((task) => task.id === taskId)
-
-      if (!draggedTask) return prev
-
-      // Remove a tarefa arrastada da lista.
-      const remainingTasks = prev!.filter((task) => task.id !== taskId)
-
-      const updatedTask: TaskBasic = {
-        ...draggedTask,
-        status: targetStatus,
+      if (targetIndex !== -1) {
+        newTasks = [...remainingTasks]
+        newTasks.splice(targetIndex, 0, updatedTask)
+      } else {
+        newTasks = [...remainingTasks, updatedTask]
       }
-
-      // Se o destino for um card, insere a tarefa
-      // imediatamente antes dele na lista.
-      if (targetTaskId && targetTaskId !== taskId) {
-        const targetIndex = remainingTasks.findIndex(
-          (task) => task.id === targetTaskId,
-        )
-
-        if (targetIndex !== -1) {
-          const newTasks = [...remainingTasks]
-          newTasks.splice(targetIndex, 0, updatedTask)
-          return newTasks
-        }
-      }
-
-      // Soltar na coluna insere a tarefa no final
-      // das tarefas daquela coluna.
+    } else {
+      // Se soltou na coluna, insere no final das tarefas daquela coluna
       let lastTargetIndex = -1
-
-      remainingTasks.forEach((task, index) => {
-        if (task.status === targetStatus) {
+      remainingTasks.forEach((t, index) => {
+        if (t.status === targetStatus) {
           lastTargetIndex = index
         }
       })
 
-      const newTasks = [...remainingTasks]
+      newTasks = [...remainingTasks]
       newTasks.splice(lastTargetIndex + 1, 0, updatedTask)
+    }
 
-      return newTasks
-    })
+    // Calcula a posição do card dentro da coluna de destino
+    const columnTasksAfterDrop = newTasks.filter((t) => t.status === targetStatus)
+    const newPosition = columnTasksAfterDrop.findIndex((t) => t.id === taskId)
 
-    clearDragState()
+    // 1. Efeito visual imediato na tela
+    setTasks(newTasks)
+
+    // 2. Envia para o back-end
+    try {
+      await updatePositionTask(taskId, {
+        status: targetStatus,
+        position: newPosition,
+      })
+    } catch (error) {
+      console.error('Erro ao atualizar posição:', error)
+      // 3. Se der erro no back, volta a lista como estava
+      setTasks(previousTasks)
+    }
   }
-
 
   async function updateData(task: TaskAll){
     try{
