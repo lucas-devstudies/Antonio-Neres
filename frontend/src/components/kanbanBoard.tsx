@@ -176,7 +176,6 @@ export function KanbanBoard() {
   async function updateData(task: TaskAll){
     try{
         const response  = await updateTask(task.id, task);
-        console.log(response);
         setOpenModal(false);
     }catch(error){
         console.error('Erro ao atualizar dados:', error);
