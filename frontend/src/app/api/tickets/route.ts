@@ -227,6 +227,8 @@ export async function GET(request: Request) {
       where: {
         deleted: false,
       },
+
+      //ordena por posição e depois por data de criação
       orderBy: [
         { position: "asc" },
         { createdAt: "asc" },
@@ -246,10 +248,6 @@ export async function GET(request: Request) {
         updatedAt: true,
       },
     });
-
-
-    console.log("Tickets recuperados do banco:");
-    console.log(JSON.stringify(tickets, null, 2));
 
     return NextResponse.json(
       { tickets },
